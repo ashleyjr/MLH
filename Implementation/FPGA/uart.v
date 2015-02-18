@@ -1,6 +1,6 @@
 module uart(
    input          clk,
-   input          rst_n,
+   input          nRst,
    input          transmit,   // Raise to trasmit
    input    [7:0] data_tx,    // Transmit this
    input          rx,
@@ -33,7 +33,7 @@ module uart(
      
    // Serial clock generation - 115200 baud = 50MHz/434
    always @(posedge clk) begin
-      if(!rst_n) begin
+      if(!nRst) begin
          ser_clk  <= 0;
          count    <= 0;
       end else begin
@@ -48,8 +48,8 @@ module uart(
 
 
    //UART RX 
-   always @ (posedge clk or negedge rst_n) begin
-      if(!rst_n) begin
+   always @ (posedge clk or negedge nRst) begin
+      if(!nRst) begin
          shifter_rx     <= 0;
          data_rx        <= 0;      
          bitcount_rx    <= 0;
@@ -75,8 +75,8 @@ module uart(
   
 
    // UART TX
-   always @(posedge clk or negedge rst_n) begin
-      if (!rst_n) begin
+   always @(posedge clk or negedge nRst) begin
+      if (!nRst) begin
          tx          <= 1; // Line high when nothing
          bitcount_tx <= 0;
          shifter_tx  <= 0;
