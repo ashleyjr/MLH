@@ -1,0 +1,7 @@
+../Implementation/FPGA/mojo_top.v
+../Implementation/FPGA/uart.v
+../Implementation/FPGA/vga.v
+../Implementation/FPGA/ram.v
+../Implementation/FPGA/Edge.v
+../Implementation/FPGA/spi.v
+Testbenches/tb.v
