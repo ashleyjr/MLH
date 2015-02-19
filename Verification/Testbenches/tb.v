@@ -2,12 +2,14 @@
 
 module tb;
    parameter CLK_PERIOD = 20;          // 50MHz clock - 20ns period  
+   parameter BAUD_PERIOD = 8680;
 
    reg         clk;
    reg         nRst;
    reg         tx;
    wire        rx;
 
+   integer i;
 
    top top(
       .clk        (clk     ),
@@ -27,13 +29,31 @@ module tb;
       $dumpfile("tb.vcd");
       $dumpvars(0,tb);
    end
+
+   task uart;
+      input [7:0] send;
+      integer i;
+      begin
+         tx = 0;
+         for(i=0;i<=7;i=i+1) begin   
+            #BAUD_PERIOD tx = send[i];
+         end
+         tx = 1;
+      end
+
+   endtask
 	
    initial begin
+
       #100     nRst = 1;
                tx = 1;
       #100     nRst = 0;
       #100     nRst = 1;
 
+      for(i=0;i<256;i=i+1) begin
+         #10000   uart(i);
+         #100;
+      end
       #300000
 	   $finish;
 	end

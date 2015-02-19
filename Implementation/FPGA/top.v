@@ -11,9 +11,9 @@ module top(
    uart uart(
       .clk        (clk        ),
       .nRst       (nRst       ),
-      .transmit   (1'h1       ),
-      .data_tx    (8'hAA   ),
-      .rx         (uart_rx    ),
+      .transmit   (1'h0       ),
+      .data_tx    (8'hAA      ),
+      .rx         (rx         ),
       .busy_tx    (busy_tx    ),
       .recieved   (recieved   ),
       .data_rx    (data_rx    ),
