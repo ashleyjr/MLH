@@ -38,7 +38,7 @@ module tb;
          for(i=0;i<=7;i=i+1) begin   
             #BAUD_PERIOD tx = send[i];
          end
-         tx = 1;
+         #BAUD_PERIOD tx = 1;
       end
 
    endtask
@@ -51,8 +51,10 @@ module tb;
       #100     nRst = 1;
 
       for(i=0;i<256;i=i+1) begin
-         #10000   uart(i);
-         #100;
+         #100000   uart(8'hAA);
+      end
+      for(i=0;i<256;i=i+1) begin
+         #100000   uart(8'hAA);
       end
       #300000
 	   $finish;
