@@ -16,14 +16,26 @@ module uart(
    reg [7:0]   data_rx;  
    
 
+   // Params
+   parameter   BAUD = 9'd434, 
+               BAUD_05 = 9'd217;
+
+   parameter   IDLE  = 4'b0000, 
+               START = 4'b0001, 
+               RX_1  = 4'b0010,
+               RX_2  = 4'b0011,
+               RX_3  = 4'b0100,
+               RX_4  = 4'b0101,
+               RX_5  = 4'b0110,
+               RX_6  = 4'b0111,
+               RX_7  = 4'b1000,
+               RX_8  = 4'b1001;
+
+
    // Internal Regs
-   reg [3:0]   bitcount_tx;        
-   reg [3:0]   bitcount_rx;
-   reg [7:0]   shifter_tx;
-   reg [7:0]   shifter_rx;
-   
-   reg [8:0]  count;
-   reg ser_clk;
+   reg [2:0]   state;
+   reg [8:0]   count;
+   reg         ser_clk;
  
    // Info from regs
    wire busy_tx      = |bitcount_tx[3:1];
@@ -37,6 +49,20 @@ module uart(
          ser_clk  <= 0;
          count    <= 0;
       end else begin
+         count <= count + 1;
+         case(state)
+            IDLE:    if(!rx) state <= START;
+            START:   if(count == BAUD_05) begin
+                        state <= RX_1;
+                        count <= 0
+                     end
+            RX:      if(count == BAUD) begin
+                        data_rx     <= {rx,data_rx[7:1]};
+                        count       <= 0;
+                        state       <= IDLE;
+                     end
+            default: state <= IDLE;
+         endcase
          count    <= count + 1;
          ser_clk  <= 0;
          if(count == 9'd434) begin
@@ -46,54 +72,3 @@ module uart(
       end
    end
 
-
-   //UART RX 
-   always @ (posedge clk or negedge nRst) begin
-      if(!nRst) begin
-         shifter_rx     <= 0;
-         data_rx        <= 0;      
-         bitcount_rx    <= 0;
-         recieved       <= 0;
-      end else begin
-         if(ser_clk) begin
-            if(!rx & ~busy_rx) begin
-               shifter_rx     <= 0;       // for debugging only
-               bitcount_rx    <= 8;       // Bits coming in
-               recieved       <= 0;       // Busy
-            end
-            if(recieving) begin
-               shifter_rx     <= {rx,shifter_rx[7:1]};   // Shift in bits
-               bitcount_rx    <= bitcount_rx - 1;
-               if(bitcount_rx == 1) begin
-                  data_rx     <= {rx,shifter_rx[7:1]};   // Done
-                  recieved    <= 1;
-               end
-            end
-         end
-      end
-   end
-  
-
-   // UART TX
-   always @(posedge clk or negedge nRst) begin
-      if (!nRst) begin
-         tx          <= 1; // Line high when nothing
-         bitcount_tx <= 0;
-         shifter_tx  <= 0;
-      end else begin  
-         if (transmit & ~busy_tx) begin   // New byte
-            shifter_tx  <= data_tx[7:0];
-            bitcount_tx <= 10; 
-         end  
-         
-         if (sending & ser_clk) begin     // shift out bits
-            if(bitcount_tx == 10) begin
-               tx <= 0;
-            end else begin
-               { shifter_tx, tx } <= { 1'h1, shifter_tx };
-            end 
-            bitcount_tx <= bitcount_tx - 1;
-         end        
-      end
-   end
-endmodule
