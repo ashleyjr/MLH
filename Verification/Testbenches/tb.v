@@ -2,7 +2,7 @@
 
 module tb;
    parameter CLK_PERIOD = 20;          // 50MHz clock - 20ns period  
-   parameter BAUD_PERIOD = 8680;
+   parameter BAUD_PERIOD = 8700;
 
    reg         clk;
    reg         nRst;
@@ -53,9 +53,7 @@ module tb;
       for(i=0;i<256;i=i+1) begin
          #100000   uart(8'hAA);
       end
-      for(i=0;i<256;i=i+1) begin
-         #100000   uart(8'hAA);
-      end
+
       #300000
 	   $finish;
 	end
