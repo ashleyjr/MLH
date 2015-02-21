@@ -1,4 +1,3 @@
-`timescale 1ns/1ns
 
 module tb;
    parameter CLK_PERIOD = 20;          // 50MHz clock - 20ns period  
@@ -51,7 +50,7 @@ module tb;
       #100     nRst = 1;
 
       for(i=0;i<256;i=i+1) begin
-         #100000   uart(8'hAA);
+         #100000   uart(i);
       end
 
       #300000
