@@ -11,23 +11,18 @@ module top(
 
    wire loop;
 
-   always @(posedge clk or negedge nRst) begin
-      if (!nRst)  data_tx <= 0;
-      else begin
-         data_tx <= data_tx + 1;
-      end
-   end
+
 
    uart uart(
       .clk        (clk        ),
       .nRst       (nRst       ),
-      .transmit   (!busy_rx       ),
-      .data_tx    (8'hAA   ),
-      .rx         (loop        ),
+      .transmit   (  recieved    ),
+      .data_tx    (data_rx ),
+      .rx         (rx    ),
       .busy_rx    ( busy_rx),
-      .recieved   (recieved   ),
+      .recieved   (recieved  ),
       .data_rx    (data_rx    ),
-      .tx         (loop       )
+      .tx         (tx      )
    );
 
 endmodule

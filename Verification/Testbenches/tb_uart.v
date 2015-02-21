@@ -1,5 +1,5 @@
 
-module tb;
+module tb_uart;
    parameter CLK_PERIOD = 20;          // 50MHz clock - 20ns period  
    parameter BAUD_PERIOD = 8700;
 

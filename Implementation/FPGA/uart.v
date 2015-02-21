@@ -139,8 +139,8 @@ module uart(
             TX_6, 
             TX_7,
             TX_8:       if(count_tx == BAUD) begin                // Shift out bits
-                           tx          <= shift_tx[7];
-                           shift_tx    <= shift_tx << 1;
+                           tx          <= shift_tx[0];
+                           shift_tx    <= shift_tx >> 1;
                            count_tx    <= 0;
                            state_tx    <= state_tx + 1;
                         end
