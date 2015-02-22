@@ -1,34 +1,26 @@
 
 module tb;
    parameter CLK_PERIOD = 20;          // 50MHz clock - 20ns period  
-   parameter BAUD_PERIOD = 8700;
+   
+   reg            clk;
+   reg            nRst;
+   reg   [7:0]    data_in;
+   reg            read;
+   reg            write;
+   wire  [7:0]    data_out;
+   wire           valid;
 
-   reg         clk;
-   reg         nRst;
-   reg         tx;
-   wire        rx;
-   wire        recieved;
-   wire        busy_rx;
-   wire        busy_tx;
-   wire [7:0]       data_tx;
-   wire  [7:0]      data_rx;
 
    integer i,j;
 
-   reg sample_rx;
-   reg sample_tx;
-
-   uart uart(
-      .clk        (clk        ),
-      .nRst       (nRst       ),
-      .transmit   (recieved   ),
-      .data_tx    (data_rx    ),
-      .rx         (tx         ),
-      .busy_rx    (busy_rx    ),
-      .busy_tx    (busy_tx    ),
-      .recieved   (recieved   ),
-      .data_rx    (data_rx    ),
-      .tx         (rx         )
+   registers registers(
+      .clk           (clk        ),
+      .nRst          (nRst       ),
+      .data_in       (data_in   ),
+      .read          (read    ),
+      .write         (write       ),
+      .data_out      (data_out    ),
+      .valid         (valid   )
    );
 
 	initial begin
@@ -43,46 +35,48 @@ module tb;
       $dumpvars(0,tb);
    end
 
-   task uart_send;
-      input [7:0] send;
-      integer i;
-      begin
-         tx = 0;
-         for(i=0;i<=7;i=i+1) begin   
-            sample_tx = !sample_tx;
-            #BAUD_PERIOD tx = send[i];
-         end
-         sample_tx = !sample_tx;
-         #BAUD_PERIOD tx = 1;
-      end
-   endtask
 
-   task uart_get;
-      output [7:0] get;
-      integer i;
-      begin
-         sample_rx = !sample_rx;
-         for(i=0;i<=7;i=i+1) begin   
-            #BAUD_PERIOD  get[i] = rx;
-            sample_rx = !sample_rx;
-         end
-      end
-   endtask
-	
    initial begin
-               sample_tx = 0;
-               sample_rx = 0;
+               read = 0;
+               write = 0;
       #100     nRst = 1;
-               tx = 1;
       #100     nRst = 0;
       #100     nRst = 1;
 
-      for(i=0;i<256;i=i+1) begin
-         #100000     uart_send(i);
-                     uart_get(j);
+      // Rubbish
+      
+      for(i=0;i<20;i=i+1) begin
+         #100 data_in <= i;
       end
 
-      #300000
+
+      for(i=0;i<20;i=i+1) begin
+         read <= 1;
+         write <= 1;
+         #100 data_in <= i;
+      end
+      read <= 0;
+      write <= 0;
+
+
+
+
+      // Write to regs
+      for(i=0;i<256;i=i+1) begin
+         #100    data_in <= i;
+         #100    write <= 1;
+         #100    data_in <= 8'hFF - i;
+         #100    write    <= 0;
+      end
+
+      // Red from regs
+      for(i=0;i<256;i=i+1) begin
+         #100     data_in    <= i;
+         #100     read <= 1;
+         #100     read    <= 0;
+      end
+
+      #3000
 	   $finish;
 	end
 

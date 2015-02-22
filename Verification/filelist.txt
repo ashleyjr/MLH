@@ -1,3 +1,4 @@
 ../Implementation/FPGA/top.v
 ../Implementation/FPGA/uart.v
+../Implementation/FPGA/registers.v
 Testbenches/tb.v
