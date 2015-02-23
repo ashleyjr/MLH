@@ -10,6 +10,9 @@ module tb;
    wire  [7:0]    data_out;
    wire           valid;
 
+   reg [7:0] mem1;
+   reg [7:0] mem2;
+   reg [7:0] mem3;
 
    integer i,j;
 
@@ -37,11 +40,13 @@ module tb;
 
 
    initial begin
+
                read = 0;
                write = 0;
       #100     nRst = 1;
       #100     nRst = 0;
       #100     nRst = 1;
+
 
       // Rubbish
       
@@ -62,12 +67,16 @@ module tb;
 
 
       // Write to regs
-      for(i=0;i<256;i=i+1) begin
+      for(i=0;i<20;i=i+1) begin
          #100    data_in <= i;
          #100    write <= 1;
-         #100    data_in <= 8'hFF - i;
+         #100    data_in <= 8'hF0 - i;
          #100    write    <= 0;
       end
+
+      mem1= registers.regs[0];
+      mem2 = registers.regs[1];
+      mem3 = registers.regs[2];
 
       // Red from regs
       for(i=0;i<256;i=i+1) begin

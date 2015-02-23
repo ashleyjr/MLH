@@ -15,14 +15,14 @@ module registers(
    // Params
    parameter   REGS     = 4'hF;
 
-   parameter   ADDRESS  = 4'b0000, 
-               WRITE    = 4'b0001,
-               READ     = 4'b0010;
+   parameter   ADDRESS  = 2'b00, 
+               WRITE    = 2'b01,
+               READ     = 2'b10;
 
 
    // Internal Regs
-   reg [3:0]   state;
-   reg [7:0]   address;
+   reg [1:0]   state;
+   reg [3:0]   address;
    reg [7:0]   regs [REGS:0];
 
 
@@ -36,27 +36,31 @@ module registers(
       end else begin
          case(state)
             ADDRESS:    begin
-                           valid <= 0;
-                           if(data_in < REGS) address <= data_in;
-                            
-                           
-                                 if(read & !write)    
-                                    state <= READ;
-                                 if(write & !read)
-                                    state <= WRITE;
-                           
+                           if(data_in < REGS) begin
+                              if(read & !write) begin
+                                 state <= READ;
+                                 data_out <= regs[data_in];
+                                 valid <= 1;
+                              end   
+                              if(write & !read) begin
+                                 state <= WRITE;
+                                 address <= data_in;
+                              end
+                           end           
                         end
             READ:       begin
-                           data_out <= regs[address];
-                           valid    <= 1;
-                           if(!read)   
+                           if(!read) begin  
                               state <= ADDRESS;
+                              valid <= 0;
+                           end
                         end
             WRITE:      begin
                            valid <= 1;
-                           regs[address]  <= data_in;
-                           if(!write) 
+                           if(!write) begin 
+                              regs[address]  <= data_in;
                               state <= ADDRESS;
+                              valid <= 0;
+                           end
                         end
             default:    state       <= ADDRESS;
          endcase
