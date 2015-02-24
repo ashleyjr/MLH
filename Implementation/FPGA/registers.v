@@ -38,28 +38,29 @@ module registers(
             ADDRESS:    begin
                            if(data_in < REGS) begin
                               if(read & !write) begin
-                                 state <= READ;
+                                 state    <= READ;
                                  data_out <= regs[data_in];
-                                 valid <= 1;
+                                 valid    <= 1;
                               end   
                               if(write & !read) begin
-                                 state <= WRITE;
-                                 address <= data_in;
+                                 state    <= WRITE;
+                                 address  <= data_in;
+                                 valid    <= 1;
                               end
                            end           
                         end
             READ:       begin
                            if(!read) begin  
-                              state <= ADDRESS;
-                              valid <= 0;
+                              state       <= ADDRESS;
+                              valid       <= 0;
                            end
                         end
             WRITE:      begin
                            valid <= 1;
                            if(!write) begin 
                               regs[address]  <= data_in;
-                              state <= ADDRESS;
-                              valid <= 0;
+                              state          <= ADDRESS;
+                              valid          <= 0;
                            end
                         end
             default:    state       <= ADDRESS;
