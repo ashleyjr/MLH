@@ -47,7 +47,7 @@ module perceptron(
       .clk           (clk        ),
       .nRst          (nRst       ),
       .data_in       (input_data_in),
-      .read          (input_read),
+      .read          (input_read    ),
       .write         (input_write),
       .data_out      (input_data_out),
       .valid         (   )
