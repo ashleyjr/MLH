@@ -13,7 +13,7 @@ module registers(
    reg         valid;
 
    // Params
-   parameter   REGS     = 4'hF;
+   parameter   REGS     = 8'd255;
 
    parameter   ADDRESS  = 2'b00, 
                WRITE    = 2'b01,
@@ -22,7 +22,7 @@ module registers(
 
    // Internal Regs
    reg [1:0]   state;
-   reg [3:0]   address;
+   reg [7:0]   address;
    reg [7:0]   regs [REGS:0];
 
 
