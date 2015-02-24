@@ -8,20 +8,19 @@ module tb;
 
    reg            clk;
    reg            nRst;
-   reg            write;
-   reg   [7:0]    in;
-   reg   [7:0]    weight;
-   wire  [15:0]   out;
+   reg            tx;
+   wire           rx;
 
    integer i,j;
 
-   percept percept(
+   reg sample_rx;
+   reg sample_tx;
+
+   perceptron perceptron(
       .clk           (clk        ),
       .nRst          (nRst       ),
-      .write         (write      ),
-      .in            (in         ),
-      .weight        (weight     ),
-      .out           (out        )
+      .rx            (tx         ),
+      .tx            (rx         )
    );
 
 	initial begin
@@ -36,27 +35,49 @@ module tb;
       $dumpvars(0,tb);
    end
 
-
-   task mul;
-      input [7:0] i, w;
+   task uart_send;
+      input [7:0] send;
+      integer i;
       begin
-         #10000   write    = 0;
-         #10000   in       = i;
-         #10000   weight   = w;
-         #10000   write    = 1;
+         tx = 0;
+         for(i=0;i<=7;i=i+1) begin   
+            sample_tx = !sample_tx;
+            #BAUD_PERIOD tx = send[i];
+         end
+         sample_tx = !sample_tx;
+         #BAUD_PERIOD tx = 1;
+      end
+   endtask
+
+   task uart_get;
+      output [7:0] get;
+      integer i;
+      begin
+         sample_rx = !sample_rx;
+         for(i=0;i<=7;i=i+1) begin   
+            #BAUD_PERIOD  get[i] = rx;
+            sample_rx = !sample_rx;
+         end
       end
    endtask
    
    initial begin
-      #100     nRst     = 1;
-               write    = 0;
-      #100     nRst     = 0;
-      #100     nRst     = 1;
+               sample_tx = 0;
+               sample_rx = 0;
+      #100     nRst = 1;
+               tx = 1;
+      #100     nRst = 0;
+      #100     nRst = 1;
 
-      mul(8,8);
-      mul(8,9);
-      mul(8,10);
-      mul(8,11);
+      #100000 uart_send(8'b10000000);
+
+      #100000 uart_send(8'b00000001);
+
+      #100000 uart_send(8'b10101010);
+
+      #100000 uart_send(8'b10000001);
+
+      #100000 uart_send(8'b00000001);
 
 
       #10000

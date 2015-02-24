@@ -14,7 +14,9 @@ module percept(
    reg   [7:0]    percept_weight;
    reg   [15:0]   out;
    reg            state;
+   
 
+   // TURN INPUT in to shift register!!
    always @(posedge clk or negedge nRst) begin
       if (!nRst) begin
          percept_in     <= 0;
