@@ -1,29 +1,26 @@
+`timescale 1ns/1ps
+
 
 module tb;
    parameter CLK_PERIOD = 20;          // 50MHz clock - 20ns period  
-   
+   parameter BAUD_PERIOD = 8700;
+
+
    reg            clk;
    reg            nRst;
-   reg   [7:0]    data_in;
-   reg            read;
-   reg            write;
-   wire  [7:0]    data_out;
-   wire           valid;
-
-   reg [7:0] mem1;
-   reg [7:0] mem2;
-   reg [7:0] mem3;
+   reg            tx;
+   wire           rx;
 
    integer i,j;
 
-   registers registers(
+   reg sample_rx;
+   reg sample_tx;
+
+   perceptron perceptron(
       .clk           (clk        ),
       .nRst          (nRst       ),
-      .data_in       (data_in   ),
-      .read          (read    ),
-      .write         (write       ),
-      .data_out      (data_out    ),
-      .valid         (valid   )
+      .rx            (tx         ),
+      .tx            (rx         )
    );
 
 	initial begin
@@ -38,57 +35,47 @@ module tb;
       $dumpvars(0,tb);
    end
 
+   task uart_send;
+      input [7:0] send;
+      integer i;
+      begin
+         tx = 0;
+         for(i=0;i<=7;i=i+1) begin   
+            sample_tx = !sample_tx;
+            #BAUD_PERIOD tx = send[i];
+         end
+         sample_tx = !sample_tx;
+         #BAUD_PERIOD tx = 1;
+      end
+   endtask
 
+   task uart_get;
+      output [7:0] get;
+      integer i;
+      begin
+         sample_rx = !sample_rx;
+         for(i=0;i<=7;i=i+1) begin   
+            #BAUD_PERIOD  get[i] = rx;
+            sample_rx = !sample_rx;
+         end
+      end
+   endtask
+   
    initial begin
-
-               read = 0;
-               write = 0;
+               sample_tx = 0;
+               sample_rx = 0;
       #100     nRst = 1;
+               tx = 1;
       #100     nRst = 0;
       #100     nRst = 1;
 
-
-      // Rubbish
-      
-      for(i=0;i<20;i=i+1) begin
-         #100 data_in <= i;
-      end
-
-
-      for(i=0;i<20;i=i+1) begin
-         read <= 1;
-         write <= 1;
-         #100 data_in <= i;
-      end
-      read <= 0;
-      write <= 0;
-
-
-
-
-      // Write to regs
-      for(i=0;i<20;i=i+1) begin
-         #100    data_in <= i;
-         #100    write <= 1;
-         #100    data_in <= 8'hF0 - i;
-         #100    write    <= 0;
-      end
-
-      mem1= registers.regs[0];
-      mem2 = registers.regs[1];
-      mem3 = registers.regs[2];
-
-      // Red from regs
       for(i=0;i<256;i=i+1) begin
-         #100     data_in    <= i;
-         #100     read <= 1;
-         #100     read    <= 0;
+         #10000   uart_send(i);
+                  uart_get(j);
       end
 
-      #3000
-	   $finish;
-	end
-
+      $finish;
+   end
 
 
 
