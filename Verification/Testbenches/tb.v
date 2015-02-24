@@ -69,11 +69,18 @@ module tb;
       #100     nRst = 0;
       #100     nRst = 1;
 
-      for(i=0;i<256;i=i+1) begin
-         #10000   uart_send(i);
-                  uart_get(j);
-      end
+      #100000 uart_send(8'b10000000);
 
+      #100000 uart_send(8'b00000001);
+
+      #100000 uart_send(8'b10101010);
+
+      #100000 uart_send(8'b10000001);
+
+      #100000 uart_send(8'b00000001);
+
+
+      #10000
       $finish;
    end
 

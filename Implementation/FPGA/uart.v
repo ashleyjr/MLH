@@ -109,10 +109,13 @@ module uart(
                            state_rx    <= RX_WAIT;
                            recieved    <= 1;
                         end
-            RX_WAIT:    if(rx) begin                              // Wait for line to go high
-                           busy_rx     <= 0;
-                           state_rx    <= RX_IDLE;
-                           count_rx    <= 0;
+            RX_WAIT:    begin
+                           recieved    <= 0;
+                           if(rx) begin                           // Wait for line to go high
+                              busy_rx     <= 0;
+                              state_rx    <= RX_IDLE;
+                              count_rx    <= 0;
+                           end
                         end
             default:    state_rx       <= RX_IDLE;
          endcase
