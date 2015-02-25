@@ -10,8 +10,7 @@ module tb;
    reg            nRst;
    reg            shift_in;
    reg            shift_out;
-   reg            mul;
-   reg            acc;
+   reg            mul_and_acc;
    reg            data_in;
    wire           data_out;
 
@@ -24,8 +23,7 @@ module tb;
       .nRst          (nRst       ),
       .shift_in      (shift_in   ),
       .shift_out     (shift_out  ),
-      .mul           (mul        ),
-      .acc           (acc        ),
+      .mul_and_acc   (mul_and_acc),
       .data_in       (data_in    ),
       .data_out      (data_out   )
    );
@@ -61,8 +59,7 @@ module tb;
    endtask
    
    initial begin
-                     mul = 0;
-                     acc = 0;
+                     mul_and_acc = 0;
                      shift_in = 0;
                      shift_out = 0;
       #100           nRst = 1;
@@ -70,11 +67,12 @@ module tb;
       #100           nRst = 1;
 
       #100           shift_in_data(1000,2000);
-      #CLK_PERIOD    mul = 1;
-      #CLK_PERIOD    mul = 0;
-      #CLK_PERIOD    acc = 1;
-      #CLK_PERIOD    acc = 0;
-                     shift_out = 1;
+      #CLK_PERIOD    mul_and_acc = 1;
+      #CLK_PERIOD    mul_and_acc = 1;
+      #CLK_PERIOD    mul_and_acc = 0;
+
+
+      #10000               shift_out = 1;
 
       #10000
       $finish;
