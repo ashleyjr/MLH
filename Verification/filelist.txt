@@ -1,5 +1,3 @@
-../Implementation/FPGA/perceptron.v
 ../Implementation/FPGA/percept.v
 ../Implementation/FPGA/uart.v
-../Implementation/FPGA/registers.v
 Testbenches/tb.v

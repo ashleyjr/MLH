@@ -1,39 +1,45 @@
 module percept(
    input             clk,
    input             nRst,
-   input             write,
-   input    [7:0]    in,   
-   input    [7:0]    weight,
-   output   [15:0]   out
+   input             shift_in,
+   input             shift_out,
+   input             mul,
+   input             acc,   
+   input             data_in,
+   output            data_out
 );
 
-   parameter   DATA  = 1;
-   parameter   CALC  = 0;
+   reg                     data_out;
 
-   reg   [7:0]    percept_in;
-   reg   [7:0]    percept_weight;
-   reg   [15:0]   out;
-   reg            state;
+   parameter               SIZE  = 32;
+
+
+   reg   [SIZE-1:0]        data_1;
+   reg   [SIZE-1:0]        data_2;
+   reg   [(2*SIZE)-1:0]    multiplied;
+   reg   [(4*SIZE)-1:0]    accumulator;
    
 
-   // TURN INPUT in to shift register!!
    always @(posedge clk or negedge nRst) begin
       if (!nRst) begin
-         percept_in     <= 0;
-         percept_weight <= 0;
-         state          <= DATA;
+         data_1         <= 0;
+         data_2         <= 0;  
+         multiplied     <= 0;
+         accumulator    <= 0;
+         data_out       <= 0;
       end else begin
-         case(state)
-            DATA:    if(write) begin
-                        percept_in     <= in;
-                        percept_weight <= weight;
-                        state          <= CALC;
+         // Only calc whe one bit high
+         case({shift_in,shift_out,mul,acc})
+            4'b1000: begin
+                        data_1      <= {data_1,data_in};
+                        data_2      <= {data_2,data_1[SIZE-1]};
                      end
-            CALC:    if(!write) begin
-                        out   <= percept_in*percept_weight;
-                        state <= DATA;
+            4'b0100: begin
+                        data_out    <= accumulator[(4*SIZE)-1];
+                        accumulator <= accumulator << 1;
                      end
-            default: state <= DATA;
+            4'b0010: multiplied  <= data_1*data_2;
+            4'b0001: accumulator <= accumulator + multiplied;
          endcase
       end
    end
