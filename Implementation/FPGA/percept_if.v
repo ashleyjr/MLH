@@ -36,6 +36,7 @@ module percept_if(
 
    reg      [3:0]    state;
    reg      [7:0]    shift;
+   reg      [7:0]    count;
 
    always @(posedge clk or negedge nRst) begin
       if (!nRst) begin
@@ -49,10 +50,13 @@ module percept_if(
          // if
          state          <= IDLE_RX;
          shift          <= 0;
+         count          <= 0;
        end else begin
           case(state) 
-            IDLE_RX:       if(!serial_in)
-                              state <= AD_SHIFT_0;
+            IDLE_RX:       begin
+                              if(!serial_in)
+                                 state <= AD_SHIFT_0;
+                           end
             AD_SHIFT_0,
             AD_SHIFT_1,
             AD_SHIFT_2,
@@ -61,13 +65,18 @@ module percept_if(
             AD_SHIFT_5,
             AD_SHIFT_6,
             AD_SHIFT_7:    begin
-                              shift <= {shift,serial_in};
-                              if(shift == address) 
-                                 state <= FOUND;
+                              shift    <= {shift,serial_in} ;
+                              state    <= state + 1;
                            end
-            AD_SHIFT_8:    state <= IDLE_RX;
-            FOUND:         begin
+            AD_SHIFT_8:    if(shift == address) 
+                                 state <= FOUND;
+                           else
                               state <= IDLE_RX;
+            FOUND:         begin
+                              if(count == 8'd128)
+                                 state <= IDLE_RX;
+                              count <= count + 1;
+                              shift_in <= serial_in;
                            end
           endcase
        end

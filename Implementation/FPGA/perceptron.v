@@ -72,7 +72,7 @@ module perceptron(
                   SHIFT_5     = 4'b0101,
                   SHIFT_6     = 4'b0110,
                   SHIFT_7     = 4'b0111,
-                  SHIFT_8     = 4'b1000;
+                  DONE        = 4'b1000;
 
    reg   [3:0]    state;
    reg   [3:0]    count;
@@ -94,20 +94,26 @@ module perceptron(
          case(state)
             IDLE_RX: if(recieved) begin
                         serial   <= 0;       // begin tx
-                        state    <= SHIFT_0;
+                        state    <= SHIFT_7;
                      end
-            SHIFT_0,
-            SHIFT_1,
-            SHIFT_2,
-            SHIFT_3,
-            SHIFT_4,
-            SHIFT_5,
+            SHIFT_7,
             SHIFT_6,
-            SHIFT_7: begin
-                        serial <= data_rx[state];
-                        state <= state + 1;
+            SHIFT_5,
+            SHIFT_4,
+            SHIFT_3,
+            SHIFT_2,
+            SHIFT_1: begin
+                        serial   <= data_rx[state];
+                        state    <= state - 1;
                      end
-            SHIFT_8: state <= IDLE_RX;
+            SHIFT_0: begin
+                        serial   <= data_rx[0];
+                        state    <= DONE;
+                     end
+            DONE:    begin
+                        state    <= IDLE_RX;
+                        serial   <= 1;
+                     end
          endcase
       end
    end
