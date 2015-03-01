@@ -1,5 +1,5 @@
 ../Implementation/FPGA/percept.v
 ../Implementation/FPGA/percept_if.v
 ../Implementation/FPGA/uart.v
-../Implementation/FPGA/perceptron.v
+
 Testbenches/tb.v

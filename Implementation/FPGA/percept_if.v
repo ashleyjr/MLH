@@ -1,8 +1,9 @@
-module percept_if(
+module percept_front_if(
    input             clk,
    input             nRst,
-   input             serial_in,
-   input    [7:0]    address
+   input    [7:0]    address,
+   input             in,
+   output            out
 );
 
    // Percept module
@@ -22,17 +23,22 @@ module percept_if(
       .data_out      (data_out   )
    );  
 
-   parameter      IDLE_RX        = 4'b1111,
-                  AD_SHIFT_0     = 4'b0000,
-                  AD_SHIFT_1     = 4'b0001,
-                  AD_SHIFT_2     = 4'b0010,
-                  AD_SHIFT_3     = 4'b0011,
-                  AD_SHIFT_4     = 4'b0100,
-                  AD_SHIFT_5     = 4'b0101,
-                  AD_SHIFT_6     = 4'b0110,
-                  AD_SHIFT_7     = 4'b0111,
-                  AD_SHIFT_8     = 4'b1000,
-                  FOUND          = 4'b1001;
+   // IF
+   reg            out;
+
+
+   parameter      IDLE           = 4'b1111,
+                  READ           = 4'b1101,
+                  WRITE          = 4'b1100,
+                  ADDRESS_0      = 4'b0000,
+                  ADDRESS_1      = 4'b0001,
+                  ADDRESS_2      = 4'b0010,
+                  ADDRESS_3      = 4'b0011,
+                  ADDRESS_4      = 4'b0100,
+                  ADDRESS_5      = 4'b0101,
+                  ADDRESS_6      = 4'b0110,
+                  ADDRESS_7      = 4'b0111,
+                  READ_WRITE     = 4'b1000;
 
    reg      [3:0]    state;
    reg      [7:0]    shift;
@@ -48,36 +54,62 @@ module percept_if(
 
 
          // if
-         state          <= IDLE_RX;
+         out            <= 0;
+         state          <= IDLE;
          shift          <= 0;
          count          <= 0;
        end else begin
-          case(state) 
-            IDLE_RX:       begin
-                              if(!serial_in)
-                                 state <= AD_SHIFT_0;
+         if(count > 0)
+            count <= count - 1;
+         case(state) 
+            IDLE:       begin
+                           if(!in & (count == 0)) begin
+                              count       <= 73;
+                              state       <= ADDRESS_0;
                            end
-            AD_SHIFT_0,
-            AD_SHIFT_1,
-            AD_SHIFT_2,
-            AD_SHIFT_3,
-            AD_SHIFT_4,
-            AD_SHIFT_5,
-            AD_SHIFT_6,
-            AD_SHIFT_7:    begin
-                              shift    <= {shift,serial_in} ;
-                              state    <= state + 1;
+                        end
+            ADDRESS_0,
+            ADDRESS_1,
+            ADDRESS_2,
+            ADDRESS_3,
+            ADDRESS_4,
+            ADDRESS_5,
+            ADDRESS_6,
+            ADDRESS_7:  begin
+                           shift    <= {shift,in};
+                           state    <= state + 1;
+                        end
+
+            READ_WRITE: if(shift == address) begin
+                           if(in) begin
+                              state       <= WRITE;
+                              shift_in    <= 1;
+                              data_in     <= in;
+                           end else begin
+                              state       <= READ;
+                              shift_out   <= 1;
+                              out         <= data_out;
                            end
-            AD_SHIFT_8:    if(shift == address) 
-                                 state <= FOUND;
-                           else
-                              state <= IDLE_RX;
-            FOUND:         begin
-                              if(count == 8'd128)
-                                 state <= IDLE_RX;
-                              count <= count + 1;
-                              shift_in <= serial_in;
+                        end else begin
+                           state <= IDLE;
+                        end
+
+            WRITE:      begin
+                           data_in  <= in;
+                           if(count == 0) begin
+                              state       <= IDLE;
+                              shift_in    <= 0;
                            end
+                        end
+
+            READ:       begin
+                           out <= data_out;
+                           if(count == 0) begin
+                              state       <= IDLE;
+                              shift_out   <= 0;
+                           end
+                        end
+            default:    state <= IDLE;
           endcase
        end
    end

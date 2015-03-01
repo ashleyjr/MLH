@@ -1,20 +1,33 @@
+`timescale 1ns/1ps
+
 
 module tb;
    parameter CLK_PERIOD = 20;          // 50MHz clock - 20ns period  
    parameter BAUD_PERIOD = 8700;
 
-   reg         clk;
-   reg         nRst;
-   reg         tx;
-   wire        rx;
+
+   reg            clk;
+   reg            nRst;
+   reg            in;
 
    integer i,j;
 
-   perceptron perceptron(
-      .clk        (clk        ),
-      .nRst       (nRst       ),
-      .rx         (tx         ),
-      .tx         (rx         )
+
+
+   percept_front_if percept_front_if_1(
+      .clk           (clk        ),
+      .nRst          (nRst       ),
+      .address       (8'h01      ),
+      .in            (in         ),
+      .out           (out        )
+   );
+
+   percept_front_if percept_front_if_2(
+      .clk           (clk        ),
+      .nRst          (nRst       ),
+      .address       (8'hAA      ),
+      .in            (in         ),
+      .out           (out        )
    );
 
 	initial begin
@@ -29,49 +42,61 @@ module tb;
       $dumpvars(0,tb);
    end
 
-   task uart_send;
-      input [7:0] send;
+   task write;
+      input [7:0] address;
+      input [63:0] data;
       integer i;
       begin
-         tx = 0;
-         for(i=0;i<=7;i=i+1) begin   
-            #BAUD_PERIOD tx = send[i];
+         in  = 0;
+         #CLK_PERIOD;
+         for(i=7;i>=0;i=i-1) begin  
+            in  = address[i];
+            #CLK_PERIOD;
          end
-         #BAUD_PERIOD tx = 1;
+         in  = 1;
+         #CLK_PERIOD;
+         for(i=63;i>=0;i=i-1) begin  
+            in  = data[i];
+            #CLK_PERIOD;
+         end
+         in = 1;
       end
    endtask
 
-   task uart_get;
-      output [7:0] get;
+   task read;
+      input [7:0] address;
       integer i;
       begin
-         for(i=0;i<=7;i=i+1) begin   
-            #BAUD_PERIOD  get[i] = rx;
+         in  = 0;
+         #CLK_PERIOD;
+         for(i=7;i>=0;i=i-1) begin  
+            in  = address[i];
+            #CLK_PERIOD;
          end
+         in  = 0;
+         #CLK_PERIOD;
+         for(i=63;i>=0;i=i-1) begin  
+            #CLK_PERIOD;
+         end
+         in = 1;
       end
    endtask
-	
+   
    initial begin
-      #100     nRst = 1;
-               tx = 1;
-      #100     nRst = 0;
-      #100     nRst = 1;
+      #1               in = 1;
+      #100           nRst = 1;
+      #100           nRst = 0;
+      #100           nRst = 1;
 
+      #1000          write(8'h10,64'h0000000000000000);
+      #1000          write(8'h10,64'hAAAAAAAAAAAAAAAA);
+      #1000          write(8'hAA,64'h0101010101010101);
 
-      #100000     uart_send(8'hAA);
-      #100000     uart_send(8'hAA);
-      #100000     uart_send(8'hAA);
-      #100000     uart_send(8'hAA);
-      #100000     uart_send(8'hAA);
-      #100000     uart_send(8'hAD);
-      #100000     uart_send(8'h01);
-      #100000     uart_send(8'h00);
-      #100000     uart_send(8'hAA);
+      #1000          read(8'hAA);
 
-      #300000
-	   $finish;
-	end
-
+      #10000
+      $finish;
+   end
 
 
 

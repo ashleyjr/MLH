@@ -27,40 +27,23 @@ module perceptron(
    );
 
 
-
+/*
 
    // Percept modules connected to serial line
    reg            serial;
 
-   percept_if percept_if_1 (  
-      .clk           (clk        ),
-      .nRst          (nRst       ),
-      .serial_in     (serial     ),
-      .address       (8'h00      )
-   );
-
-   percept_if percept_if_2 (  
-      .clk           (clk        ),
-      .nRst          (nRst       ),
-      .serial_in     (serial     ),
-      .address       (8'h01     )
-   );    
-
-   percept_if percept_if_3 (  
-      .clk           (clk        ),
-      .nRst          (nRst       ),
-      .serial_in     (serial     ),
-      .address       (8'h02      )
-   );  
-
-   percept_if percept_if_4 (  
-      .clk           (clk        ),
-      .nRst          (nRst       ),
-      .serial_in     (serial     ),
-      .address       (8'h03      )
-   );  
-
-
+   genvar i;  
+   generate  
+      for (i=0; i < 8; i=i+1)  begin: percept_ifs
+         percept_if percept_if (  
+            .clk           (clk        ),
+            .nRst          (nRst       ),
+            .address       (i          ),
+            .serial        (serial     )
+         );   
+      end  
+   endgenerate 
+*/
 
 
    parameter      IDLE_RX     = 4'b1111,
