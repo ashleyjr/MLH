@@ -3,8 +3,7 @@ module percept(
    input             nRst,
    input             shift_in,
    input             shift_out,
-   input             mul_and_acc,
-   input             acc,   
+   input             mul_and_acc, 
    input             data_in,
    output            data_out
 );
@@ -29,15 +28,15 @@ module percept(
       end else begin
          // Only do an op when one bit is high
          case({shift_in,shift_out,mul_and_acc})
-            4'b100:  begin
+            3'b100:  begin
                         data_1      <= {data_1,data_in};
                         data_2      <= {data_2,data_1[SIZE-1]};
                      end
-            4'b010:  begin
+            3'b010:  begin
                         data_out    <= accumulator[(4*SIZE)-1];
                         accumulator <= accumulator << 1;
                      end
-            4'b001:  begin
+            3'b001:  begin
                         multiplied     <= data_1*data_2;
                         accumulator    <= accumulator + multiplied;
                      end
