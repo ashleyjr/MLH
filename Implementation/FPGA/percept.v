@@ -1,45 +1,46 @@
 module percept(
    input             clk,
    input             nRst,
-   input             shift_in,
-   input             shift_out,
-   input             mul_and_acc, 
-   input             data_in,
-   output            data_out
+   input             in,
+   input             in_res,
+   input             shift,
+   input             shift_res,
+   input             mul,
+   input             acc,
+   output            out,
+   output            out_res
 );
-
-   reg                     data_out;
 
    parameter               SIZE  = 32;
 
    reg   [SIZE-1:0]        data_1;
    reg   [SIZE-1:0]        data_2;
-   reg   [(2*SIZE)-1:0]    multiplied;
    reg   [(4*SIZE)-1:0]    accumulator;
    
+   assign out = data_2[SIZE-1];
+   assign out_res = accumulator[(4*SIZE)-1];
 
    always @(posedge clk or negedge nRst) begin
       if (!nRst) begin
          data_1         <= 0;
          data_2         <= 0;  
-         multiplied     <= 0;
          accumulator    <= 0;
-         data_out       <= 0;
       end else begin
          // Only do an op when one bit is high
-         case({shift_in,shift_out,mul_and_acc})
-            3'b100:  begin
-                        data_1      <= {data_1,data_in};
-                        data_2      <= {data_2,data_1[SIZE-1]};
-                     end
-            3'b010:  begin
-                        data_out    <= accumulator[(4*SIZE)-1];
-                        accumulator <= accumulator << 1;
-                     end
-            3'b001:  begin
-                        multiplied     <= data_1*data_2;
-                        accumulator    <= accumulator + multiplied;
-                     end
+         case({shift,shift_res,mul,acc})
+            4'b1000:    begin
+                           data_1      <= {data_1,in};
+                           data_2      <= {data_2,data_1[SIZE-1]};
+                        end
+            4'b0100:    begin
+                           accumulator <= {accumulator,in_res};
+                        end
+            4'b0010:    begin
+                           accumulator <= data_1*data_2;
+                        end
+            4'b0001:    begin
+                           accumulator <= accumulator + (data_1*data_2);
+                        end
          endcase
       end
    end
