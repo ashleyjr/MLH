@@ -1,76 +1,68 @@
 module percept_control(
    input             clk,
    input             nRst,
-   input    [7:0]    address,
-   input             in,
-   output            shift,
-   output            shift_res,
-   output            mul,
-   output            acc
+   input       [8:0] address,
+   input             rx,
+   output reg  [2:0] opcode
 );
+   
+   // Opcodes
+   parameter      OUT_DATA1      = 3'h0,
+                  OUT_DATA2      = 3'h1,
+                  OUT_RES        = 3'h2,
+                  LOAD           = 3'h3,
+                  LOAD_RES       = 3'h4,
+                  MUL            = 3'h5,
+                  MUL_ADD        = 3'h6,
+                  NO_OP          = 3'h7;
 
-   // Percept module
-   reg            shift;
-   reg            shift_res;
-   reg            mul;
-   reg            acc;
 
-   parameter      IDLE           = 4'hF,
-                  ADDRESS_0      = 4'h0,
-                  ADDRESS_1      = 4'h1,
-                  ADDRESS_2      = 4'h2,
-                  ADDRESS_3      = 4'h3,
-                  ADDRESS_4      = 4'h4,
-                  ADDRESS_5      = 4'h5,
-                  ADDRESS_6      = 4'h6,
-                  ADDRESS_7      = 4'h7,
-                  OP             = 4'h8;
-
+   // Sates
+   parameter      IDLE           = 2'h0,
+                  FETCH          = 2'h1,
+                  DECODE         = 2'h2,
+                  EXECUTE        = 2'h3;
+      
    reg      [3:0]    state;
    reg      [7:0]    shifter;
-   reg      [7:0]    count;
+   reg      [6:0]    count;
 
    always @(posedge clk or negedge nRst) begin
       if (!nRst) begin
-         // percept
-         shift       <= 0;
-         shift_res   <= 0;
-         mul         <= 0;
-         acc         <= 0;
-
-
-         // if
-         state          <= IDLE;
-         shift          <= 0;
-         count          <= 0;
+         opcode   <= NO_OP; 
+         state    <= IDLE;
+         shifter  <= 0;
+         count    <= 0;
        end else begin
          if(count > 0)
             count <= count - 1;
          case(state) 
-            IDLE:       begin
-                           if(!in & (count == 0)) begin
-                              count       <= 73;
-                              state       <= ADDRESS_0;
+            IDLE:       if(!rx) begin
+                           count       <= 8;
+                           state       <= FETCH;
+                        end
+            FETCH:      begin
+                           shifter     <= {shifter,rx}; 
+                           if(count == 0)
+                              if(shifter == address) begin
+                                 count <= 3;
+                                 state <= DECODE;
+                              end else begin 
+                                 state <= IDLE;
+                              end
+                        end
+            DECODE:     begin
+                           shifter     <= {shifter,rx}; 
+                           if(count == 0) begin
+                              opcode   <= shifter[2:0];
+                              state    <= EXECUTE;
+                              case(shifter[2:0])
+                                 NO_OP: count <= 0;
+                              endcase
                            end
                         end
-            ADDRESS_0,
-            ADDRESS_1,
-            ADDRESS_2,
-            ADDRESS_3,
-            ADDRESS_4,
-            ADDRESS_5,
-            ADDRESS_6,
-            ADDRESS_7:  begin
-                           shifter     <= {shifter,in};
-                           state       <= state + 1;
-                        end
-            OP:         if((shifter == address) & (count > 0))begin
-                           shift <= 1;
-                           state <= OP;
-                        end else begin
-                           shift <= 0;
+            EXECUTE:    if(count == 0) 
                            state <= IDLE;
-                        end 
             default:    state <= IDLE;
           endcase
        end

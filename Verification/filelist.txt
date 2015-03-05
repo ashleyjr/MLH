@@ -1,4 +1,3 @@
-../Implementation/FPGA/percept.v
+../Implementation/FPGA/percept_data.v
 ../Implementation/FPGA/percept_control.v
-../Implementation/FPGA/percept_wrapper.v
 Testbenches/tb.v
