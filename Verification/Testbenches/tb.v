@@ -7,17 +7,18 @@ module tb;
 
    reg            clk;
    reg            nRst;
-   reg            in;
-   wire           out;
+   reg            rx;
+   wire  [2:0]    opcode; 
 
    integer i,j;
 
 
-   percept_wrapper percept_wrapper(
+   percept_control percept_control(
       .clk           (clk        ),
       .nRst          (nRst       ),
-      .in            (in         ),
-      .out           (out        )
+      .address       (8'hAA      ),
+      .rx            (rx         ),
+      .opcode        (opcode     )
    );
 
    initial begin
@@ -32,32 +33,37 @@ module tb;
       $dumpvars(0,tb);
    end
 
-    task write;
+   task do_op;
       input [7:0]    address;
-      input [63:0]   data;
+      input [2:0]    opcode;
+      input [61:0]   data;
       integer i;
       begin
-         for(i=7;i>=0;i=i-1) begin  
-            in  = address[i];
-            #CLK_PERIOD;
-         end
-         in = 1;
+         rx = 0;
          #CLK_PERIOD;
-         for(i=63;i>=0;i=i-1) begin  
-            in  = data[i];
+         for(i=7;i>=0;i=i-1) begin 
+            rx  = address[i];
             #CLK_PERIOD;
          end
-         in = 1;
+         for(i=2;i>=0;i=i-1) begin  
+            rx  = opcode[i];
+            #CLK_PERIOD;
+         end
+         for(i=61;i>=0;i=i-1) begin
+            rx = data[i];
+            #CLK_PERIOD;
+         end
       end
    endtask
-   
+
    initial begin
-      #100           nRst = 1;
-      #100           nRst = 0;
-      #100           nRst = 1;
-      #10000          write(8'h55,256);
-      #10000          write(8'hAA,128);
-      #1000
+                     rx    = 1;
+      #100           nRst  = 1;
+      #100           nRst  = 0;
+      #100           nRst  = 1;
+ 
+      #10000         do_op(8'hAA,3'h4,100);
+      #10000
       $finish;
    end
 
