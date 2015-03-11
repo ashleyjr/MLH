@@ -13,9 +13,10 @@ module tb;
    integer i,j;
 
 
-   percept_bank percept_bank (
+   percept percept (
       .clk           (clk        ),
       .nRst          (nRst       ),
+      .address       (8'hAA      ),
       .rx            (rx         ),
       .tx            (tx         )
    );

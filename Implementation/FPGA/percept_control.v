@@ -1,7 +1,7 @@
 module percept_control(
    input             clk,
    input             nRst,
-   input       [8:0] address,
+   input       [7:0] address,
    input             rx,
    output reg  [2:0] opcode
 );

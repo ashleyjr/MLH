@@ -8,16 +8,17 @@ module tb;
    reg            clk;
    reg            nRst;
    reg            rx;
-   wire           tx;
+   wire  [2:0]    opcode; 
 
    integer i,j;
 
 
-   percept_bank percept_bank (
+   percept_control percept_control(
       .clk           (clk        ),
       .nRst          (nRst       ),
+      .address       (8'hAA      ),
       .rx            (rx         ),
-      .tx            (tx         )
+      .opcode        (opcode     )
    );
 
    initial begin
