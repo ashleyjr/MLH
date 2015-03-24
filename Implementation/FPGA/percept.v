@@ -9,7 +9,7 @@ module percept(
    wire  [7:0] address;
    wire  [2:0] opcode;
 
-   percept_control percept_control(
+   pctrl pctrl(
       .clk           (clk        ),
       .nRst          (nRst       ),
       .address       (address    ),
@@ -17,7 +17,7 @@ module percept(
       .opcode        (opcode     )
    );
 
-   percept_data percept_data(
+   pdata pdata(
       .clk           (clk        ),
       .nRst          (nRst       ),
       .rx            (rx         ),
