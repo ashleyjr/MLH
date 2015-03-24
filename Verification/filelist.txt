@@ -1,8 +1,0 @@
-../Implementation/FPGA/perceptron.v
-../Implementation/FPGA/uart.v
-../Implementation/FPGA/percept_bank_control.v
-../Implementation/FPGA/percept_bank.v
-../Implementation/FPGA/percept.v
-../Implementation/FPGA/percept_data.v
-../Implementation/FPGA/percept_control.v
-Testbenches/tb_perceptron.v
