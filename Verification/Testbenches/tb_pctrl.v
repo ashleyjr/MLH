@@ -13,7 +13,7 @@ module tb;
    integer i,j;
 
 
-   percept_control percept_control(
+   pctrl pctrl(
       .clk           (clk        ),
       .nRst          (nRst       ),
       .address       (8'hAA      ),
