@@ -32,7 +32,7 @@ module tb;
    end
 
    initial begin
-      $dumpfile("tb.vcd");
+      $dumpfile("acc.vcd");
       $dumpvars(0,tb);
    end
 
