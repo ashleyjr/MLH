@@ -2,36 +2,37 @@ module acc(
    input             clk,
    input             nRst,
    input             rx,
-   input             ctrl_acc,
-   input    [3:0]    ctrl_sel,
-   output   [7:0]    acc_data
+   input             add,
+   input    [3:0]    sel,
+   output   [7:0]    data
 );
 
-   reg   [31:0]   shift;
-   reg [127:0]    acc;
-   reg   [1:0]    state;
+   reg   [31:0]      shift;
+   reg   [127:0]     big;
+   reg               state;
 
-   parameter   WAIT    = 2'h0;
-               SHIFT     = 2'h1;
-               ADD    = 2'h2;
+   parameter   WAIT     = 2'h0,
+               SHIFT    = 2'h1;
 
 
    always @(posedge clk or negedge nRst) begin
-      if(nRst) begin
-         shift_in <= 0;
-         acc      <= 0;
-         state    <= NO_OP;
+      if(!nRst) begin
+         shift    <= 0;
+         big      <= 0;
+         state    <= WAIT;
       end else begin
          case(state)
-            WAIT:    begin
-               
-
+            WAIT:    if(add) begin
+                        shift <= {shift,rx};
+                        state <= SHIFT;
+                     end
+            SHIFT:   if(add) begin
+                        shift <= {shift,rx};
+                     end else begin
+                        big <= big + shift;
+                        state <= WAIT;
                      end
          endcase
-         if(ctrl_acc) begin
-            shift <= {shift,rx};
-         end
-
       end
    end
   

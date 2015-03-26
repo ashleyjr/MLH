@@ -8,17 +8,20 @@ module tb;
    reg            clk;
    reg            nRst;
    reg            rx;
-   wire  [2:0]    opcode; 
+   reg            add;
+   reg   [3:0]    sel;
+   wire  [7:0]    data; 
 
    integer i,j;
 
 
-   percept_control percept_control(
-      .clk           (clk        ),
-      .nRst          (nRst       ),
-      .address       (8'hAA      ),
-      .rx            (rx         ),
-      .opcode        (opcode     )
+   acc acc(
+      .clk        (clk        ),
+      .nRst       (nRst       ),
+      .rx         (rx         ),
+      .add        (add        ),
+      .sel        (sel        ),
+      .data       (data       )
    );
 
    initial begin
@@ -33,36 +36,33 @@ module tb;
       $dumpvars(0,tb);
    end
 
-   task do_op;
-      input [7:0]    address;
-      input [2:0]    opcode;
-      input [61:0]   data;
+   task shift_and_add;
+      input [31:0]    data;
       integer i;
       begin
+         add = 1;
          rx = 0;
          #CLK_PERIOD;
-         for(i=7;i>=0;i=i-1) begin 
-            rx  = address[i];
+         for(i=31;i>=0;i=i-1) begin 
+            rx  = data[i];
             #CLK_PERIOD;
          end
-         for(i=2;i>=0;i=i-1) begin  
-            rx  = opcode[i];
-            #CLK_PERIOD;
-         end
-         for(i=61;i>=0;i=i-1) begin
-            rx = data[i];
-            #CLK_PERIOD;
-         end
+         add = 0;
       end
    endtask
 
    initial begin
+                     add   = 0;
                      rx    = 1;
       #100           nRst  = 1;
       #100           nRst  = 0;
       #100           nRst  = 1;
  
-      #10000         do_op(8'hAA,3'h4,100);
+      #10000         shift_and_add(32'hAAAAAAAA);
+      #10000
+      #10000         shift_and_add(32'hAAAAAAAA);
+      #10000
+      #10000         shift_and_add(32'hAAAAAAAA);
       #10000
       $finish;
    end
