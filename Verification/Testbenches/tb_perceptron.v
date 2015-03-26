@@ -29,7 +29,7 @@ module tb_perceptron;
 	end
 
 	initial begin
-      $dumpfile("tb.vcd");
+      $dumpfile("perceptron.vcd");
       $dumpvars(0,tb_perceptron);
    end
 

@@ -39,8 +39,8 @@ module tb_uart;
 	end
 
 	initial begin
-      $dumpfile("tb.vcd");
-      $dumpvars(0,tb);
+      $dumpfile("uart.vcd");
+      $dumpvars(0,tb_uart);
    end
 
    task uart_send;

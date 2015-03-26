@@ -29,7 +29,7 @@ module tb;
    end
 
    initial begin
-      $dumpfile("tb.vcd");
+      $dumpfile("ctrl.vcd");
       $dumpvars(0,tb);
    end
 
