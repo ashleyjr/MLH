@@ -9,8 +9,8 @@ module tb;
    reg            nRst;
    reg            rx;
    reg            add;
-   reg   [3:0]    sel;
-   wire  [7:0]    data; 
+   reg            clear;
+   wire  [127:0]  big; 
 
    integer i,j;
 
@@ -20,8 +20,8 @@ module tb;
       .nRst       (nRst       ),
       .rx         (rx         ),
       .add        (add        ),
-      .sel        (sel        ),
-      .data       (data       )
+      .clear      (clear      ),
+      .big        (big        )
    );
 
    initial begin
@@ -35,6 +35,11 @@ module tb;
       $dumpfile("acc.vcd");
       $dumpvars(0,tb);
    end
+
+   initial  begin
+      $display("\t\ttime,\tbig"); 
+      $monitor("%d:\t%d",$time, acc.big); 
+   end 
 
    task shift_and_add;
       input [31:0]    data;
@@ -52,17 +57,32 @@ module tb;
    endtask
 
    initial begin
+                     clear = 0;
                      add   = 0;
                      rx    = 1;
       #100           nRst  = 1;
       #100           nRst  = 0;
       #100           nRst  = 1;
  
-      #10000         shift_and_add(32'hAAAAAAAA);
-      #10000
-      #10000         shift_and_add(32'hAAAAAAAA);
-      #10000
-      #10000         shift_and_add(32'hAAAAAAAA);
+
+      for(i=0;i < 10;i=i+1) begin
+         #1000 shift_and_add(32'h00000001);
+      end
+
+      #1000          clear = 1;
+      #1000          clear = 0;
+
+      for(i=0;i < 10;i=i+1) begin
+         #1000 shift_and_add(32'h10000000);
+      end
+
+      #1000          clear = 1;
+
+
+      for(i=0;i < 10;i=i+1) begin
+         #1000 shift_and_add(32'h00000001);
+      end
+
       #10000
       $finish;
    end
