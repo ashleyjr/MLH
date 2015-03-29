@@ -49,5 +49,28 @@ if "__main__" == __name__:
 
     elif(platform.system() == 'Windows'):
         print "INFO: Windows OS detected"
+        folder = "Testbenches"
+        sim = "tb_" + options.module + "_filelist.txt"
+
+        if((options.sim == None) and (options.waves == None)):
+            print "INFO: You must specify and operation"
+
+        if(options.sim):
+            print "INFO: Simulate " + options.module
+
+            cmd = "C:\\iverilog\\bin\\iverilog.exe -o " + options.module + ".dat -c " + os.path.join(folder,sim)
+            print " CMD: " + cmd
+            os.system(cmd)
+
+
+            cmd = "C:\\iverilog\\bin\\vvp.exe " + options.module + ".dat -vcd"
+            print " CMD: " + cmd
+            os.system(cmd)
+
+
+        if(options.waves):
+            cmd = "C:\\iverilog\\gtkwave\\bin\\gtkwave.exe " + options.module +".vcd"
+            print " CMD: " + cmd
+            os.system(cmd)
 
     print
