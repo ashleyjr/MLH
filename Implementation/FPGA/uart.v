@@ -20,7 +20,7 @@ module uart(
    
 
    // Params
-   parameter   BAUD = 9'd434, 
+   parameter   BAUD = 9'd5208, 
                BAUD_05 = BAUD / 2;
 
    parameter   RX_IDLE  = 4'b0000, 
@@ -58,7 +58,7 @@ module uart(
  
 
      
-   // Serial clock generation - 115200 baud = 50MHz/434
+   // Serial clock generation - 115200 baud = 50MHz/5208
    always @(posedge clk or negedge nRst) begin
       if(!nRst) begin
 

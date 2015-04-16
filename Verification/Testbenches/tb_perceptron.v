@@ -17,8 +17,8 @@ module tb_perceptron;
    perceptron perceptron(
       .clk        (clk        ),
       .nRst       (nRst       ),
-      .rx         (tx         ),
-      .tx         (rx         )
+      .host_tx    (tx         ),
+      .uart_tx    (rx         )
    );
 
 	initial begin
@@ -67,12 +67,12 @@ module tb_perceptron;
       #100     nRst = 0;
       #100     nRst = 1;
 
-      //for(i=0;i<10;i=i+1) begin
-   //   #100000     uart_send(i);
-      //               uart_get(j);
-      //end
+      for(i=0;i<10;i=i+1) begin
+      #100000     uart_send(i);
+                     uart_get(j);
+      end
 
-      #30000
+      #3000000
 	   $finish;
 	end
 
