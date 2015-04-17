@@ -8,8 +8,10 @@ module ctrl(
    output reg        out,
    output reg        tx
 );
-   always @(posedge clk or negedge nRst) begin
+   always @(posedge clk) begin
       data_out <= data_in;
       out <= in;
+
+
    end
 endmodule

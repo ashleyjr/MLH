@@ -30,5 +30,5 @@ NET "avr_tx" LOC = P55;
 NET "avr_rx" LOC = P59;
 NET "avr_rx_busy" LOC = P39;
 
-NET "tx" LOC = P67;
-NET "rx" LOC = P66;
+NET "tx" LOC = P1;
+NET "rx" LOC = P2;

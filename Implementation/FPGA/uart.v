@@ -20,7 +20,7 @@ module uart(
    
 
    // Params
-   parameter   BAUD = 9'd5208, 
+   parameter   BAUD = 10'd430,      // 8.6us count, 115200 baud 
                BAUD_05 = BAUD / 2;
 
    parameter   RX_IDLE  = 4'b0000, 

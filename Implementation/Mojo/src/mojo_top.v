@@ -36,7 +36,7 @@ assign spi_channel = 4'bzzzz;
 // Points to top module of perceptron code
 perceptron perceptron(
    .clk     (clk),
-   .nRst    (nRst),
+   .nRst    (rst_n),
    .host_tx (rx),
    .uart_tx (tx),
    .leds    (led)
