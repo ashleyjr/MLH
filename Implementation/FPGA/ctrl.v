@@ -51,16 +51,14 @@ module ctrl(
          status <= 8'hAA;
          state <= IDLE;
       end else begin
+         clear <= 0;
          case(state)
             IDLE:    begin
                         out      <= 0;
                         acc      <= 0;
-                        clear    <= 0;
                         if(in) begin
                            data     <= data_in;
                            state    <= SEND_RX_1;
-                           acc      <= 1;
-                           clear    <= 1;
                         end
                      end
             SEND_RX_1,
@@ -72,13 +70,11 @@ module ctrl(
             SEND_RX_7:  begin
                         data  <= data << 1;
                         acc   <= 1;
-                        clear <= 0;
                         tx    <= data[7];
                         state <= state + 1;
                      end
             SEND_RX_8:  begin
                         acc   <= 1;
-                        clear <= 0;
                         tx    <= data[7];
                         state <= SEND_ACC_1;
                         sel <= 0;
@@ -99,7 +95,7 @@ module ctrl(
             SEND_ACC_13,
             SEND_ACC_14,
             SEND_ACC_15 :    begin
-                              out <= 0;
+                              out <= 1;
                               acc <= 0;
                               clear <= 0;
                               if(!busy) begin
@@ -107,6 +103,10 @@ module ctrl(
                                  state <= state + 1;
                               end
                            end
+            SEND_ACC_16 :  begin
+                              state <= IDLE;   
+                           end
+
          endcase
       end
    end

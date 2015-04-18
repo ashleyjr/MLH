@@ -67,8 +67,8 @@ module tb_perceptron;
       #100     nRst = 0;
       #100     nRst = 1;
 
-      for(i=0;i<10;i=i+1) begin
-      #100000     uart_send(i);
+      for(i=235;i<255;i=i+1) begin
+      #2000000     uart_send(i);
                      uart_get(j);
       end
 
