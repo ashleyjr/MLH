@@ -3,15 +3,16 @@ module perceptron(
    input             nRst,
    input             host_tx,
    output            uart_tx,
-   output reg  [7:0] leds
+   output      [7:0] leds
 );
 
    
    // ACC
-   wire  [7:0] acc_data;
+   wire  [127:0] acc_data;
 
    // CTRL
    wire        ctrl_acc;
+   wire        ctrl_clear;
    wire  [3:0] ctrl_sel;
    wire  [7:0] ctrl_data;
    wire        ctrl_good;
@@ -23,23 +24,19 @@ module perceptron(
    //UART
    wire  [7:0] uart_data;
    wire        uart_good;
+   wire        uart_tx_busy;
 
    
    
    
-   always@(posedge clk) begin
-      leds <= uart_data;
-   end
-
-
    uart uart(
       .clk        (clk        ),
       .nRst       (nRst       ),
       .transmit   (ctrl_good  ),
       .data_tx    (mux_data   ),
       .rx         (host_tx    ),
-      .busy_tx    (           ),
-      .busy_rx    (           ),
+      .busy_tx    (uart_tx_busy),
+      .busy_rx    (      ),
       .recieved   (uart_good  ),
       .data_rx    (uart_data  ),
       .tx         (uart_tx    )
@@ -52,16 +49,28 @@ module perceptron(
       .data_in    (uart_data  ),
       .in         (uart_good  ),
       .rx         (),
+      .status     (leds       ),
+      .busy       (uart_tx_busy),
       .data_out   (),
-      .out        (),
-      .tx         (ctrl_tx    )
+      .out        (ctrl_good),
+      .tx         (ctrl_tx    ),
+      .acc        (ctrl_acc   ),
+      .clear      (ctrl_clear ),
+      .sel        (ctrl_sel)
    );
 
-   //bank bank(
-   //   .clk        (clk),
-   //   .nRst       (nRst),
-   //   .rx         (),
-   //   .tx         ()
-   //);
-   
+   acc acc(
+      .clk        (clk),
+      .nRst       (nRst),
+      .rx         (ctrl_tx),
+      .add        (ctrl_acc),
+      .clear      (ctrl_clear),
+      .big        (acc_data)
+   );
+
+   mux mux(
+      .in         (acc_data),
+      .sel        (ctrl_sel),
+      .out        (mux_data)
+   );
 endmodule

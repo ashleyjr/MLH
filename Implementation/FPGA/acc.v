@@ -29,6 +29,7 @@ module acc(
                                     state <= SHIFT;
                                  end
                         2'b01:   big <= 0;
+                        2'b11:   shift <= 0;
                      endcase
             SHIFT:   if(add) begin
                         shift <= {shift,rx};

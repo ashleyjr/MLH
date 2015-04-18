@@ -1,3 +1,5 @@
+../Implementation/FPGA/acc.v
+../Implementation/FPGA/mux.v
 ../Implementation/FPGA/bank.v
 ../Implementation/FPGA/ctrl.v
 ../Implementation/FPGA/pctrl.v
