@@ -1,7 +1,7 @@
 
 module tb_perceptron;
    parameter CLK_PERIOD = 20;          // 50MHz clock - 20ns period  
-   parameter BAUD_PERIOD = 8700;
+   parameter BAUD_PERIOD = 8600;
 
    reg         clk;
    reg         nRst;
@@ -11,6 +11,7 @@ module tb_perceptron;
 
    integer i,j;
 
+   reg   [7:0] data;
    reg sample_rx;
    reg sample_tx;
 
@@ -56,6 +57,7 @@ module tb_perceptron;
             #BAUD_PERIOD  get[i] = rx;
             sample_rx = !sample_rx;
          end
+         #BAUD_PERIOD sample_rx = !sample_rx;
       end
    endtask
 	
@@ -67,9 +69,12 @@ module tb_perceptron;
       #100     nRst = 0;
       #100     nRst = 1;
 
-      for(i=235;i<255;i=i+1) begin
-      #2000000     uart_send(i);
-                     uart_get(j);
+      for(i=0;i<10;i=i+1) begin
+         #1800000    uart_send(i);
+         for(j=0;j<15;j=j+1) begin
+               uart_get(data);
+               #BAUD_PERIOD;
+         end 
       end
 
       #3000000

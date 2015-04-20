@@ -23,22 +23,24 @@ module ctrl(
                SEND_RX_6      = 8'd6,
                SEND_RX_7      = 8'd7,
                SEND_RX_8      = 8'd8,
-               SEND_ACC_1     = 8'd9, 
-               SEND_ACC_2     = 8'd10,
-               SEND_ACC_3     = 8'd11,
-               SEND_ACC_4     = 8'd12,
-               SEND_ACC_5     = 8'd13, 
-               SEND_ACC_6     = 8'd14,
-               SEND_ACC_7     = 8'd15,
-               SEND_ACC_8     = 8'd16,
-               SEND_ACC_9     = 8'd17, 
-               SEND_ACC_10    = 8'd18,
-               SEND_ACC_11    = 8'd19,
-               SEND_ACC_12    = 8'd20,
-               SEND_ACC_13    = 8'd21, 
-               SEND_ACC_14    = 8'd22,
-               SEND_ACC_15    = 8'd23,
-               SEND_ACC_16    = 8'd24;
+               DELAY_1        = 8'd9,
+               DELAY_2        = 8'd10,
+               SEND_ACC_1     = 8'd11, 
+               SEND_ACC_2     = 8'd12,
+               SEND_ACC_3     = 8'd13,
+               SEND_ACC_4     = 8'd14,
+               SEND_ACC_5     = 8'd15, 
+               SEND_ACC_6     = 8'd16,
+               SEND_ACC_7     = 8'd17,
+               SEND_ACC_8     = 8'd18,
+               SEND_ACC_9     = 8'd19, 
+               SEND_ACC_10    = 8'd20,
+               SEND_ACC_11    = 8'd21,
+               SEND_ACC_12    = 8'd22,
+               SEND_ACC_13    = 8'd23, 
+               SEND_ACC_14    = 8'd24,
+               SEND_ACC_15    = 8'd25,
+               SEND_ACC_16    = 8'd26;
 
 
 
@@ -76,9 +78,14 @@ module ctrl(
             SEND_RX_8:  begin
                         acc   <= 1;
                         tx    <= data[7];
-                        state <= SEND_ACC_1;
+                        state <= DELAY_1;
                         sel <= 0;
                         out <= 1;
+                     end
+            DELAY_1,
+            DELAY_2: begin
+                        acc <= 0;
+                        state <= state + 1;
                      end
             SEND_ACC_1,
             SEND_ACC_2,

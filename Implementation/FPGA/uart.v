@@ -45,7 +45,8 @@ module uart(
                TX_6     = 4'b0111,
                TX_7     = 4'b1000,
                TX_8     = 4'b1001,
-               TX_WAIT  = 4'b1010;
+               TX_WAIT  = 4'b1010,
+               TX_BUSY  = 4'b1011;
 
    // Internal Regs
    reg [3:0]   state_rx;
@@ -148,9 +149,13 @@ module uart(
                            state_tx    <= state_tx + 1;
                         end
             TX_WAIT:    if(count_tx == BAUD) begin                // Return line high and wait
-                           state_tx    <= TX_IDLE;
+                           state_tx    <= TX_BUSY;
                            tx          <= 1;
-                           busy_tx     <= 0;
+                           count_tx    <= 0;
+                        end
+            TX_BUSY:    if(count_tx == BAUD) begin                // Keep the line high for one baud period
+                           state_tx    <= TX_IDLE;
+                           busy_tx     <= 0; 
                         end
             default:    state_tx       <= TX_IDLE;
          endcase
