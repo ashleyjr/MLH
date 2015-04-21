@@ -80,12 +80,15 @@ module ctrl(
                         tx    <= data[7];
                         state <= DELAY_1;
                         sel <= 0;
-                        out <= 1;
                      end
-            DELAY_1,
+            DELAY_1: begin
+                        acc <= 0;
+                        state <= DELAY_2;
+                     end
             DELAY_2: begin
                         acc <= 0;
-                        state <= state + 1;
+                        out <= 1;
+                        state <= SEND_ACC_1;
                      end
             SEND_ACC_1,
             SEND_ACC_2,
