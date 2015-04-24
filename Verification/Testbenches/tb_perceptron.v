@@ -69,15 +69,15 @@ module tb_perceptron;
       #100     nRst = 0;
       #100     nRst = 1;
 
-      for(i=230;i<255;i=i+1) begin
-         #1800000    uart_send(i);
+      for(i=250;i<255;i=i+1) begin
+         #900000    uart_send(i);
          for(j=0;j<15;j=j+1) begin
                uart_get(data);
                #BAUD_PERIOD;
          end 
       end
 
-      #3000000
+      #30000
 	   $finish;
 	end
 

@@ -30,47 +30,55 @@ module perceptron(
    
    
    uart uart(
-      .clk        (clk        ),
-      .nRst       (nRst       ),
-      .transmit   (ctrl_good  ),
-      .data_tx    (mux_data   ),
-      .rx         (host_tx    ),
-      .busy_tx    (uart_tx_busy),
-      .busy_rx    (      ),
-      .recieved   (uart_good  ),
-      .data_rx    (uart_data  ),
-      .tx         (uart_tx    )
+      .clk        (clk           ),
+      .nRst       (nRst          ),
+      .transmit   (ctrl_good     ),
+      .data_tx    (mux_data      ),
+      .rx         (host_tx       ),
+      .busy_tx    (uart_tx_busy  ),
+      .busy_rx    (              ),
+      .recieved   (uart_good     ),
+      .data_rx    (uart_data     ),
+      .tx         (uart_tx       )
    );
 
 
    ctrl ctrl(
-      .clk        (clk        ),
-      .nRst       (nRst       ),
-      .data_in    (uart_data  ),
-      .in         (uart_good  ),
-      .rx         (),
-      .status     (leds       ),
-      .busy       (uart_tx_busy),
-      .data_out   (),
-      .out        (ctrl_good),
-      .tx         (ctrl_tx    ),
-      .acc        (ctrl_acc   ),
-      .clear      (ctrl_clear ),
-      .sel        (ctrl_sel)
+      .clk        (clk           ),
+      .nRst       (nRst          ),
+      .data_in    (uart_data     ),
+      .in         (uart_good     ),
+      .rx         (              ),
+      .status     (leds          ),
+      .busy       (uart_tx_busy  ),
+      .data_out   (              ),
+      .out        (ctrl_good     ),
+      .tx         (ctrl_tx       ),
+      .acc        (ctrl_acc      ),
+      .clear      (ctrl_clear    ),
+      .sel        (ctrl_sel      )
+   );
+
+   percept percept(
+      .clk        (clk           ),
+      .nRst       (nRst          ),
+      .address    (8'hAA         ),
+      .rx         (ctrl_tx       ),
+      .tx         (              )
    );
 
    acc acc(
-      .clk        (clk),
-      .nRst       (nRst),
-      .rx         (ctrl_tx),
-      .add        (ctrl_acc),
-      .clear      (ctrl_clear),
-      .big        (acc_data)
+      .clk        (clk           ),
+      .nRst       (nRst          ),
+      .rx         (ctrl_tx       ),
+      .add        (ctrl_acc      ),
+      .clear      (ctrl_clear    ),
+      .big        (acc_data      )
    );
 
    mux mux(
-      .in         (acc_data),
-      .sel        (ctrl_sel),
-      .out        (mux_data)
+      .in         (acc_data      ),
+      .sel        (ctrl_sel      ),
+      .out        (mux_data      )
    );
 endmodule
