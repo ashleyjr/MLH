@@ -10,7 +10,7 @@ module bank(
    genvar i;
    
    generate
-      for (i=0; i <= 255; i=i+1)  begin: bank
+      for (i=100; i <= 102; i=i+1)  begin: bank
          percept percept_inst (  
             .clk           (clk        ),
             .nRst          (nRst       ),

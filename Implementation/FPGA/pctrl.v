@@ -38,31 +38,33 @@ module pctrl(
             count <= count - 1;
          case(state) 
             IDLE:       if(!rx) begin
-                           count       <= 8;
+                           count       <= 7;
                            state       <= FETCH;
                         end
             FETCH:      begin
-                           shifter     <= {shifter,rx}; 
+                           shifter     <= {rx,shifter[7:1]}; 
                            if(count == 0)
                               if(shifter == address) begin
-                                 count <= 3;
+                                 count <= 6;
                                  state <= DECODE;
                               end else begin 
                                  state <= IDLE;
                               end
                         end
             DECODE:     begin
-                           shifter     <= {shifter,rx}; 
+                           shifter     <= {rx,shifter[7:1]}; 
                            if(count == 0) begin
-                              opcode   <= shifter[2:0];
+                              opcode   <= shifter[3:1];     // use what's in for op
                               state    <= EXECUTE;
-                              case(shifter[2:0])
-                                 NO_OP: count <= 0;
-                              endcase
+                              count    <= 31;
                            end
                         end
-            EXECUTE:    if(count == 0) 
+
+
+            EXECUTE:    if(count == 0) begin 
                            state <= IDLE;
+                           opcode <= NO_OP;
+                        end
             default:    state <= IDLE;
           endcase
        end

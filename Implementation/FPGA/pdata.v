@@ -41,8 +41,8 @@ module pdata(
          acc            <= 0;
       end else begin
          case(opcode)
-            OUT_DATA1:  data_1      <= {data_1,rx};
-            OUT_DATA2:  data_2      <= {data_2,rx};
+            OUT_DATA1:  data_1      <= {rx,data_1[SIZE-1:1]};
+            OUT_DATA2:  data_2      <= {rx,data_2[SIZE-1:1]};
             OUT_RES:    acc         <= {acc,rx};  
             LOAD:       begin
                            data_1   <= {data_1,rx};

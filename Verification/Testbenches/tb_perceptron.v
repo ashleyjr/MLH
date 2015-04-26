@@ -69,13 +69,37 @@ module tb_perceptron;
       #100     nRst = 0;
       #100     nRst = 1;
 
-      for(i=250;i<255;i=i+1) begin
-         #900000    uart_send(i);
-         for(j=0;j<15;j=j+1) begin
-               uart_get(data);
-               #BAUD_PERIOD;
-         end 
-      end
+
+
+      // Address
+      #900000    uart_send(100);
+      
+      // Opcode
+      #900000     uart_send(0);
+
+      // data
+      #900000    uart_send(1);
+      #900000    uart_send(2);
+      #900000    uart_send(3);
+      #900000    uart_send(4);
+
+
+
+
+      // Address
+      #900000    uart_send(100);
+      
+      // Opcode
+      #900000     uart_send(1);
+
+      // data
+      #900000    uart_send(10);
+      #900000    uart_send(20);
+      #900000    uart_send(30);
+      #900000    uart_send(40);
+
+
+
 
       #30000
 	   $finish;

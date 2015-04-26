@@ -59,12 +59,11 @@ module perceptron(
       .sel        (ctrl_sel      )
    );
 
-   percept percept(
+   bank bank(
       .clk        (clk           ),
       .nRst       (nRst          ),
-      .address    (8'hAA         ),
       .rx         (ctrl_tx       ),
-      .tx         (              )
+      .tx         (     )
    );
 
    acc acc(
