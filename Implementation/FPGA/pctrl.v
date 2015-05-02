@@ -56,14 +56,21 @@ module pctrl(
                            if(count == 0) begin
                               opcode   <= shifter[3:1];     // use what's in for op
                               state    <= EXECUTE;
-                              count    <= 31;
+                              case(shifter[3:1])
+                                 OUT_RES:   count    <= 127;
+                                 default:    count    <= 31;
+                              endcase
                            end
                         end
 
 
-            EXECUTE:    if(count == 0) begin 
-                           state <= IDLE;
-                           opcode <= NO_OP;
+            EXECUTE:    begin
+                           if(opcode == MUL)       opcode <= NO_OP;
+                           if(opcode == MUL_ADD)   opcode <= NO_OP;
+                           if(count == 0) begin 
+                              state <= IDLE;
+                              opcode <= NO_OP;
+                           end
                         end
             default:    state <= IDLE;
           endcase

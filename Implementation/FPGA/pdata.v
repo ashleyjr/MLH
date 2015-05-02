@@ -28,9 +28,9 @@ module pdata(
   
    // 4 possible output states on the mux
    assign   tx = 
-      (opcode == OUT_DATA1  )  ? data_1[SIZE-1]:
-      (opcode == OUT_DATA2  )  ? data_2[SIZE-1]:
-      (opcode == OUT_RES    )  ? acc[(4*SIZE)-1]: 
+      (opcode == OUT_DATA1  )  ? data_1[0]:
+      (opcode == OUT_DATA2  )  ? data_2[0]:
+      (opcode == OUT_RES    )  ? acc[0]: 
                                  1'bZ; 
 
    // Shifting and maths 
@@ -43,7 +43,7 @@ module pdata(
          case(opcode)
             OUT_DATA1:  data_1      <= {rx,data_1[SIZE-1:1]};
             OUT_DATA2:  data_2      <= {rx,data_2[SIZE-1:1]};
-            OUT_RES:    acc         <= {acc,rx};  
+            OUT_RES:    acc         <= {1'b0,acc[(4*SIZE)-1:1]};  
             LOAD:       begin
                            data_1   <= {data_1,rx};
                            data_2   <= {data_2,data_1[SIZE-1]};

@@ -60,7 +60,8 @@ module tb_perceptron;
          #BAUD_PERIOD sample_rx = !sample_rx;
       end
    endtask
-	
+
+
    initial begin
                sample_tx = 0;
                sample_rx = 0;
@@ -69,34 +70,47 @@ module tb_perceptron;
       #100     nRst = 0;
       #100     nRst = 1;
 
+      // Load Data 1
+      #90000    uart_send(100);
+      #90000    uart_send(0);
+      #90000    uart_send(1);
+      #90000    uart_send(2);
+      #90000    uart_send(3);
+      #90000    uart_send(4);
+
+      // Load Data 2
+      #90000    uart_send(100);
+      #90000    uart_send(1);
+      #90000    uart_send(10);
+      #90000    uart_send(20);
+      #90000    uart_send(30);
+      #90000    uart_send(40);
+
+      // MUL
+      #90000    uart_send(100);
+      #90000    uart_send(5);
+      #90000    uart_send(10);
+      #90000    uart_send(20);
+      #90000    uart_send(30);
+      #90000    uart_send(40);
+
+      // MUL ADD
+      #90000    uart_send(100);
+      #90000    uart_send(6);
+      #90000    uart_send(10);
+      #90000    uart_send(20);
+      #90000    uart_send(30);
+      #90000    uart_send(40);
+
+      // OUT RESS
+      #90000    uart_send(100);
+      #90000    uart_send(2);
+      #90000    uart_send(10);
+      #90000    uart_send(20);
+      #90000    uart_send(30);
+      #90000    uart_send(40);
 
 
-      // Address
-      #900000    uart_send(100);
-      
-      // Opcode
-      #900000     uart_send(0);
-
-      // data
-      #900000    uart_send(1);
-      #900000    uart_send(2);
-      #900000    uart_send(3);
-      #900000    uart_send(4);
-
-
-
-
-      // Address
-      #900000    uart_send(100);
-      
-      // Opcode
-      #900000     uart_send(1);
-
-      // data
-      #900000    uart_send(10);
-      #900000    uart_send(20);
-      #900000    uart_send(30);
-      #900000    uart_send(40);
 
 
 
