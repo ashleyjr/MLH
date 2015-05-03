@@ -8,15 +8,17 @@ module ctrl(
    output reg  [7:0] status, 
    output reg  [7:0] data_out,
    output reg        out,
-   output reg        tx,
    output reg        acc,
    output reg        clear,
-   output reg  [3:0] sel
+   output reg  [3:0] sel,
+   output reg  [2:0] serial,
+   output            get,
+   output reg        send
 );
    
    parameter   LOAD           = 8'd0,
                RX             = 8'd1,
-
+               ACC            = 8'd2,
 
                // Get Bytes
                BYTE_2         = 8'd2,
@@ -57,13 +59,14 @@ module ctrl(
 
    // TODO: NEED A TIMEOUT
 
+   assign get = (state == LOAD) ? in : 1'b0;
 
    always @(posedge clk or negedge nRst) begin
       if(!nRst) begin
          status <= 8'hAA;
          state <= LOAD;
          load <= 0;
-         ptr <= 0;
+         serial <= 0;
       end else begin
          clear <= 0;
          case(state)
@@ -72,39 +75,21 @@ module ctrl(
             LOAD:    begin
                         out      <= 0;
                         acc      <= 0;
-                        tx       <= 1;
                         if(in) begin
-                           ptr <= ptr + 1;
-                           case(ptr)
-                              0: load[7:0]         <= data_in;
-                              1: load[15:8]        <= data_in;
-                              2: load[23:16]       <= data_in;
-                              3: load[31:24]       <= data_in;
-                              4: load[39:32]       <= data_in;
-                              5: begin
-                                    load[47:40]    <= data_in;
-                                    state <= RX;
-                                    ptr <= 0;
-                                 end
-                           endcase
+                           serial   <= serial + 1; 
                         end
                      end
 
             // Data in, get it out of the fast serial line
             RX:   begin
                      ptr <= ptr + 1;
-                     
-                     if(ptr == 0) begin
-                        tx <= 0;
-                     end else begin
-                        tx <= load[ptr];
+                                          if((load[10:8] == 3'd2) && (ptr > 16)) begin
+                        acc <= 1;
                      end
-                     
-                     if(ptr == 48) begin
-                        state <= LOAD;
-                        tx <= 1;
-                        ptr <= 0;
-                     end
+                  end
+
+            ACC:  begin
+                     state <= LOAD;
                   end
 
 

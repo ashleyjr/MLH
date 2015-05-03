@@ -10,21 +10,26 @@ module perceptron(
    // ACC
    wire  [127:0] acc_data;
 
+   // BANK
+   wire           bank_tx;
+
    // CTRL
-   wire        ctrl_acc;
-   wire        ctrl_clear;
-   wire  [3:0] ctrl_sel;
-   wire  [7:0] ctrl_data;
-   wire        ctrl_good;
-   wire        ctrl_tx;
+   wire           ctrl_acc;
+   wire           ctrl_clear;
+   wire  [3:0]    ctrl_sel;
+   wire  [7:0]    ctrl_data;
+   wire           ctrl_good;
+   wire  [2:0]    ctrl_serial;
+   wire           ctrl_get;
+   wire           ctrl_send;
 
    // MUX
-   wire  [7:0] mux_data;
+   wire  [7:0]    mux_data;
 
    //UART
-   wire  [7:0] uart_data;
-   wire        uart_good;
-   wire        uart_tx_busy;
+   wire  [7:0]    uart_data;
+   wire           uart_good;
+   wire           uart_tx_busy;
 
    
    
@@ -53,23 +58,25 @@ module perceptron(
       .busy       (uart_tx_busy  ),
       .data_out   (              ),
       .out        (ctrl_good     ),
-      .tx         (ctrl_tx       ),
       .acc        (ctrl_acc      ),
       .clear      (ctrl_clear    ),
-      .sel        (ctrl_sel      )
+      .sel        (ctrl_sel      ),
+      .serial     (ctrl_serial   ),
+      .get        (ctrl_get      ),
+      .send       (ctrl_send     )
    );
 
    bank bank(
       .clk        (clk           ),
       .nRst       (nRst          ),
       .rx         (ctrl_tx       ),
-      .tx         (     )
+      .tx         (bank_tx       )
    );
 
    acc acc(
       .clk        (clk           ),
       .nRst       (nRst          ),
-      .rx         (ctrl_tx       ),
+      .rx         (bank_tx       ),
       .add        (ctrl_acc      ),
       .clear      (ctrl_clear    ),
       .big        (acc_data      )
@@ -79,5 +86,15 @@ module perceptron(
       .in         (acc_data      ),
       .sel        (ctrl_sel      ),
       .out        (mux_data      )
+   );
+
+   serial serial(
+      .clk        (clk           ),
+      .nRst       (nRst          ),
+      .data       (uart_data     ),
+      .sel        (ctrl_serial    ),
+      .send       (ctrl_send      ),
+      .get        (ctrl_get       ),
+      .tx         (serial_tx     )
    );
 endmodule
