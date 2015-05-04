@@ -69,7 +69,7 @@ module perceptron(
    bank bank(
       .clk        (clk           ),
       .nRst       (nRst          ),
-      .rx         (ctrl_tx       ),
+      .rx         (serial_tx       ),
       .tx         (bank_tx       )
    );
 

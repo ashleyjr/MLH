@@ -15,10 +15,10 @@ module ctrl(
    output            get,
    output reg        send
 );
-   
+  
    parameter   LOAD           = 8'd0,
                RX             = 8'd1,
-               ACC            = 8'd2,
+               OP            = 8'd2,
 
                // Get Bytes
                BYTE_2         = 8'd2,
@@ -52,10 +52,11 @@ module ctrl(
 
    reg   [47:0]      load;    // Address + Opcode +  32 bits
    reg   [6:0]       ptr;
-   
+  
+   reg   [7:0]    opcode;
    reg   [7:0]    state;
    reg   [7:0]    data;
-
+   reg   [7:0]    count;
 
    // TODO: NEED A TIMEOUT
 
@@ -68,86 +69,65 @@ module ctrl(
          load <= 0;
          serial <= 0;
          send  <= 0;
+         count <= 0;
       end else begin
          clear <= 0;
          case(state)
 
+
             // Load the 9 bytes in
             LOAD:    begin
                         out      <= 0;
-                        acc      <= 0;
+                        acc      <= 0; 
                         if(in) begin
-                           serial   <= serial + 1; 
+                           count <= count + 1;
+                           if(count == 5) begin
+                              state <= RX;
+                              send <= 1;
+                              case(opcode)
+                                 2: count <= 100;
+                              endcase
+                           end
+                           if(count == 1) begin
+                              opcode <= data_in;
+                           end
                         end
                      end
 
-            // Data in, get it out of the fast serial line
-            RX:   begin
-                     ptr <= ptr + 1;
-                                          if((load[10:8] == 3'd2) && (ptr > 16)) begin
-                        acc <= 1;
-                     end
-                  end
-
-            ACC:  begin
-                     state <= LOAD;
-                  end
-
-
-//            RX_1,
-//            RX_2,
-//            RX_3,
-//            RX_4,
-//            RX_5,
-//            RX_6,
-//            RX_7:  begin
-//                        data  <= data << 1;
-//                        acc   <= 1;
-//                        tx    <= data[7];
-//                        state <= state + 1;
-//                     end
-//            RX_8:  begin
-//                        acc   <= 1;
-//                        tx    <= data[7];
-//                        state <= DELAY_1;
-//                        sel <= 0;
-//                     end
-//            DELAY_1: begin
-//                        acc <= 0;
-//                        state <= DELAY_2;
-//                     end
-//            DELAY_2: begin
-//                        acc <= 0;
-//                        out <= 1;
-//                        state <= SEND_ACC_1;
-//                     end
-//            SEND_ACC_1,
-//            SEND_ACC_2,
-//            SEND_ACC_3,
-//            SEND_ACC_4,
-//            SEND_ACC_5,
-//            SEND_ACC_6,
-//            SEND_ACC_7,
-//            SEND_ACC_8,
-//            SEND_ACC_9,
-//            SEND_ACC_10,
-//            SEND_ACC_11,
-//            SEND_ACC_12,
-//            SEND_ACC_13,
-//            SEND_ACC_14,
-//            SEND_ACC_15 :    begin
-//                              out <= 1;
-//                              acc <= 0;
-//                              clear <= 0;
-//                              if(!busy) begin
-//                                 sel <= sel + 1;
-//                                 state <= state + 1;
-//                              end
-//                           end
-//            SEND_ACC_16 :  begin
-//                              state <= IDLE;   
-//                           end
-//
+            RX:    begin
+                           send <= 0;
+                           count <= count - 1;
+                           if(count == 0) begin
+                              state <= SEND_ACC_1;
+                           end
+                        end
+            SEND_ACC_1,
+            SEND_ACC_2,
+            SEND_ACC_3,
+            SEND_ACC_4,
+            SEND_ACC_5,
+            SEND_ACC_6,
+            SEND_ACC_7,
+            SEND_ACC_8,
+            SEND_ACC_9,
+            SEND_ACC_10,
+            SEND_ACC_11,
+            SEND_ACC_12,
+            SEND_ACC_13,
+            SEND_ACC_14,
+            SEND_ACC_15 :    begin
+                              out <= 1;
+                              acc <= 0;
+                              clear <= 0;
+                              if(!busy) begin
+                                 sel <= sel + 1;
+                                 state <= state + 1;
+                              end
+                           end
+            SEND_ACC_16 :  begin
+                              state <= LOAD;   
+                           end
+            default:    state <= LOAD;
          endcase
       end
    end

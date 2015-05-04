@@ -42,12 +42,13 @@ module serial(
                      if(send) state <= SEND;
                   end
             SEND: begin
-                     count <= count - 1;
-                     tx    <= load[0];
-                     load  <= load >> 1;
                      if(count == 0) begin
                         state <= LOAD;
                         tx    <= 1;
+                     end else begin
+                        count <= count - 1;
+                        tx    <= load[0];
+                        load  <= load >> 1;
                      end
                   end
          endcase
