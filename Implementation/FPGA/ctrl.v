@@ -87,7 +87,7 @@ module ctrl(
                               send <= 1;
                               case(opcode)
                                  0,1,3,4,5,6,7:  count <= 1;
-                                 2: count <= 19;
+                                 2: count <= 17;
                               endcase
                            end
                            if(count == 1) begin
@@ -102,12 +102,23 @@ module ctrl(
                            if(count == 1) begin
                               case(opcode)
                                  0,1,3,4,5,6,7: state <= LOAD;
-                                 2: state <= ACC;
+                                 2: begin
+                                       count <= 128;
+                                       state <= ACC;
+                                    end
                               endcase
                            end
                         end
             ACC:    begin
+                        count <= count - 1;
                         acc <= 1;
+                        clear <= 0;
+                        sel <= 0;
+                        if(count == 0) begin
+                           count <= 0;
+                           acc <= 0;
+                           state <= SEND_ACC_1;
+                        end
                      end
             SEND_ACC_1,
             SEND_ACC_2,

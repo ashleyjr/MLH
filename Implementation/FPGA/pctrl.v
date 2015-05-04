@@ -18,10 +18,11 @@ module pctrl(
 
 
    // Sates
-   parameter      IDLE           = 2'h0,
-                  FETCH          = 2'h1,
-                  DECODE         = 2'h2,
-                  EXECUTE        = 2'h3;
+   parameter      IDLE           = 3'h0,
+                  FETCH          = 3'h1,
+                  DECODE         = 3'h2,
+                  EXECUTE        = 3'h3,
+                  WAIT           = 3'h4;
       
    reg      [3:0]    state;
    reg      [7:0]    shifter;
@@ -48,7 +49,8 @@ module pctrl(
                                  count <= 6;
                                  state <= DECODE;
                               end else begin 
-                                 state <= IDLE;
+                                 count <= 50;
+                                 state <= WAIT;
                               end
                         end
             DECODE:     begin
@@ -71,6 +73,13 @@ module pctrl(
                               state <= IDLE;
                               opcode <= NO_OP;
                            end
+                        end
+            WAIT:       begin
+                           count <= count - 1;
+                           if(count == 1) begin
+                              state <= IDLE;
+                              shifter <= 0;
+                           end 
                         end
             default:    state <= IDLE;
           endcase

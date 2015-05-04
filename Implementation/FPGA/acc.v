@@ -9,7 +9,7 @@ module acc(
    output reg  [127:0]     big
 );
 
-   reg   [32:0]      shift;
+   reg   [127:0]      shift;
    reg               state;
 
    parameter   WAIT     = 2'h0,
@@ -25,13 +25,13 @@ module acc(
          case(state)
             WAIT:    case({add,clear})
                         2'b10:   begin
-                                    shift <= {shift,rx};
+                                    shift <= {rx,shift[127:1]};
                                     state <= SHIFT;
                                  end
                         2'b01:   big <= 0;
                      endcase
             SHIFT:   if(add) begin
-                        shift <= {shift,rx};
+                        shift <= {rx,shift[127:1]};
                      end else begin
                         big <= big + shift;
                         shift <= 0;
