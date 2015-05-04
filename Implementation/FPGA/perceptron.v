@@ -92,7 +92,6 @@ module perceptron(
       .clk        (clk           ),
       .nRst       (nRst          ),
       .data       (uart_data     ),
-      .sel        (ctrl_serial    ),
       .send       (ctrl_send      ),
       .get        (ctrl_get       ),
       .tx         (serial_tx     )

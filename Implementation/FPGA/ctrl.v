@@ -67,6 +67,7 @@ module ctrl(
          state <= LOAD;
          load <= 0;
          serial <= 0;
+         send  <= 0;
       end else begin
          clear <= 0;
          case(state)

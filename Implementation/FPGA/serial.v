@@ -11,31 +11,46 @@ module serial(
 );
 
    reg   [47:0]      load;
+   reg   [7:0]       count;
+   reg               state;
 
-   parameter   LOAD     = 2'h0,
-               SHIFT    = 2'h1;
+   parameter   LOAD     = 1'h0,
+               SEND     = 1'h1;
 
 
    always @(posedge clk or negedge nRst) begin
       if(!nRst) begin
          load     <= 0;
+         count    <= 0;
+         tx       <= 1;
+         state    <= LOAD;
+
       end else begin
-         if(get) begin
-            case(sel)
-               0: load[7:0]         <= data;
-               1: load[15:8]        <= data;
-               2: load[23:16]       <= data;
-               3: load[31:24]       <= data;
-               4: load[39:32]       <= data;
-               5: load[47:40]       <= data;
-            endcase
-         end else begin
-            if(send) begin
-               tx <= load[0];
-               load <= load >> 1;
-            end
-         end
+         case(state)
+            LOAD: begin
+                     if(get) begin
+                        count <= count + 8;
+                        case(count)
+                           0:    load[7:0]         <= data;
+                           8:    load[15:8]        <= data;
+                           16:   load[23:16]       <= data;
+                           24:   load[31:24]       <= data;
+                           32:   load[39:32]       <= data;
+                           40:   load[47:40]       <= data;
+                        endcase
+                     end
+                     if(send) state <= SEND;
+                  end
+            SEND: begin
+                     count <= count - 1;
+                     tx    <= load[0];
+                     load  <= load >> 1;
+                     if(count == 0) begin
+                        state <= LOAD;
+                        tx    <= 1;
+                     end
+                  end
+         endcase
       end
    end
-  
 endmodule
