@@ -19,6 +19,7 @@ module ctrl(
    parameter   LOAD           = 8'd0,
                RX             = 8'd1,
                OP            = 8'd2,
+               ACC            =8'd3,
 
                // Get Bytes
                BYTE_2         = 8'd2,
@@ -85,7 +86,8 @@ module ctrl(
                               state <= RX;
                               send <= 1;
                               case(opcode)
-                                 2: count <= 100;
+                                 0,1,3,4,5,6,7:  count <= 1;
+                                 2: count <= 19;
                               endcase
                            end
                            if(count == 1) begin
@@ -97,10 +99,16 @@ module ctrl(
             RX:    begin
                            send <= 0;
                            count <= count - 1;
-                           if(count == 0) begin
-                              state <= SEND_ACC_1;
+                           if(count == 1) begin
+                              case(opcode)
+                                 0,1,3,4,5,6,7: state <= LOAD;
+                                 2: state <= ACC;
+                              endcase
                            end
                         end
+            ACC:    begin
+                        acc <= 1;
+                     end
             SEND_ACC_1,
             SEND_ACC_2,
             SEND_ACC_3,
