@@ -39,7 +39,10 @@ module serial(
                            40:   load[47:40]       <= data;
                         endcase
                      end
-                     if(send) state <= SEND;
+                     if(send) begin
+                        tx <= 0;
+                        state <= SEND;
+                     end
                   end
             SEND: begin
                      if(count == 0) begin

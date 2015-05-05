@@ -39,7 +39,7 @@ module pctrl(
             count <= count - 1;
          case(state) 
             IDLE:       if(!rx) begin
-                           count       <= 7;
+                           count       <= 8;
                            state       <= FETCH;
                         end
             FETCH:      begin
