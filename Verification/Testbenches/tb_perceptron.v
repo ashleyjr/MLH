@@ -74,17 +74,17 @@ module tb_perceptron;
       #90000    uart_send(100);
       #90000    uart_send(0);
       #90000    uart_send(1);
-      #90000    uart_send(2);
-      #90000    uart_send(3);
-      #90000    uart_send(4);
+      #90000    uart_send(0);
+      #90000    uart_send(0);
+      #90000    uart_send(0);
 
       // Load Data 2
       #90000    uart_send(100);
       #90000    uart_send(1);
-      #90000    uart_send(10);
-      #90000    uart_send(20);
-      #90000    uart_send(30);
-      #90000    uart_send(40);
+      #90000    uart_send(1);
+      #90000    uart_send(0);
+      #90000    uart_send(0);
+      #90000    uart_send(0);
 
       // MUL
       #90000    uart_send(100);
@@ -118,14 +118,14 @@ module tb_perceptron;
       #90000    uart_send(101);
       #90000    uart_send(0);
       #90000    uart_send(1);
-      #90000    uart_send(2);
-      #90000    uart_send(3);
-      #90000    uart_send(4);
+      #90000    uart_send(0);
+      #90000    uart_send(0);
+      #90000    uart_send(0);
 
       // Load Data 2
       #90000    uart_send(101);
       #90000    uart_send(1);
-      #90000    uart_send(0);
+      #90000    uart_send(1);
       #90000    uart_send(0);
       #90000    uart_send(0);
       #90000    uart_send(0);
@@ -170,17 +170,17 @@ module tb_perceptron;
       #90000    uart_send(101);
       #90000    uart_send(0);
       #90000    uart_send(1);
-      #90000    uart_send(2);
-      #90000    uart_send(3);
-      #90000    uart_send(4);
+      #90000    uart_send(0);
+      #90000    uart_send(0);
+      #90000    uart_send(0);
 
       // Load Data 2
       #90000    uart_send(101);
       #90000    uart_send(1);
-      #90000    uart_send(10);
-      #90000    uart_send(20);
-      #90000    uart_send(30);
-      #90000    uart_send(40);
+      #90000    uart_send(1);
+      #90000    uart_send(0);
+      #90000    uart_send(0);
+      #90000    uart_send(0);
 
       // MUL
       #90000    uart_send(101);

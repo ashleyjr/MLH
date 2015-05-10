@@ -20,6 +20,7 @@ module ctrl(
                RX             = 8'd1,
                OP            = 8'd2,
                ACC            =8'd3,
+               ACC_DONE       = 8'd4,
 
                // Get Bytes
                BYTE_2         = 8'd2,
@@ -58,11 +59,12 @@ module ctrl(
    reg   [7:0]    state;
    reg   [7:0]    data;
    reg   [7:0]    count;
+   reg            start;
+
 
    // TODO: NEED A TIMEOUT
 
    assign get = (state == LOAD) ? in : 1'b0;
-
    always @(posedge clk or negedge nRst) begin
       if(!nRst) begin
          status <= 8'hAA;
@@ -71,6 +73,7 @@ module ctrl(
          serial <= 0;
          send  <= 0;
          count <= 0;
+         start <= 0;
       end else begin
          clear <= 0;
          case(state)
@@ -98,6 +101,7 @@ module ctrl(
 
             RX:    begin
                            send <= 0;
+                           sel <= 0;
                            count <= count - 1;
                            if(count == 1) begin
                               case(opcode)
@@ -113,13 +117,16 @@ module ctrl(
                         count <= count - 1;
                         acc <= 1;
                         clear <= 0;
-                        sel <= 0;
                         if(count == 0) begin
                            count <= 0;
                            acc <= 0;
-                           state <= SEND_ACC_1;
+                           state <= ACC_DONE;
                         end
                      end
+            ACC_DONE:   begin
+                           out <= 1;
+                           state <= SEND_ACC_1;
+                        end
             SEND_ACC_1,
             SEND_ACC_2,
             SEND_ACC_3,
@@ -135,10 +142,11 @@ module ctrl(
             SEND_ACC_13,
             SEND_ACC_14,
             SEND_ACC_15 :    begin
-                              out <= 1;
+                              out <= 0;
                               acc <= 0;
                               clear <= 0;
-                              if(!busy) begin
+                              if(!busy & !out) begin
+                                 out <= 1;
                                  sel <= sel + 1;
                                  state <= state + 1;
                               end
