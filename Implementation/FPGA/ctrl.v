@@ -5,7 +5,7 @@ module ctrl(
    input             in,
    input             rx,
    input             busy,
-   output reg  [7:0] status, 
+   output      [7:0] status, 
    output reg  [7:0] data_out,
    output reg        out,
    output reg        acc,
@@ -16,22 +16,33 @@ module ctrl(
    output reg        send
 );
   
-   parameter   LOAD           = 8'd0,
-               RX             = 8'd1,
-               OP            = 8'd2,
-               ACC            =8'd3,
-               ACC_DONE       = 8'd4,
+   // Opcodes
+   parameter      OUT_DATA1   = 3'h0,
+                  OUT_DATA2   = 3'h1,
+                  OUT_RES     = 3'h2,
+                  LOAD        = 3'h3,
+                  LOAD_RES    = 3'h4,
+                  MUL         = 3'h5,
+                  MUL_ADD     = 3'h6,
+                  NO_OP       = 3'h7;
 
-               // Get Bytes
-               BYTE_2         = 8'd2,
-               BYTE_3         = 8'd3,
-               BYTE_4         = 8'd4,
-               BYTE_5         = 8'd5,
-               
-               // Update Array
-               DELAY_1        = 8'd9,
-               DELAY_2        = 8'd10,
-               
+
+   parameter      ADDRESS     = 8'd0,
+                  OPCODE      = 8'd1,
+                  DECODE      = 8'd2,
+                  DATA1       = 8'd3,
+                  DATA2       = 8'd4,
+                  DATA3       = 8'd5,
+                  DATA4       = 8'd6,
+                  RETURN      = 8'd7, 
+   
+   
+   
+      
+               ACC            =8'd8,
+               ACC_DONE       = 8'd9,
+               STALL          = 8'd10,
+
                // Send data back
                SEND_ACC_1     = 8'd11, 
                SEND_ACC_2     = 8'd12,
@@ -56,6 +67,7 @@ module ctrl(
    reg   [6:0]       ptr;
   
    reg   [7:0]    opcode;
+   reg   [7:0]    address;
    reg   [7:0]    state;
    reg   [7:0]    data;
    reg   [7:0]    count;
@@ -64,11 +76,13 @@ module ctrl(
 
    // TODO: NEED A TIMEOUT
 
-   assign get = (state == LOAD) ? in : 1'b0;
+   assign get = in;
+   
+   assign status = state;
+
    always @(posedge clk or negedge nRst) begin
       if(!nRst) begin
-         status <= 8'hAA;
-         state <= LOAD;
+         state <= ADDRESS;
          load <= 0;
          serial <= 0;
          send  <= 0;
@@ -77,52 +91,70 @@ module ctrl(
       end else begin
          clear <= 0;
          case(state)
-
-
-            // Load the 9 bytes in
-            LOAD:    begin
-                        out      <= 0;
-                        acc      <= 0; 
+            ADDRESS: begin
+                        acc <= 0;
+                        count <= 0;
+                        send <= 0;
+                        sel <= 0;
                         if(in) begin
-                           count <= count + 1;
-                           if(count == 5) begin
-                              state <= RX;
-                              send <= 1;
-                              case(opcode)
-                                 0,1,3,4,5,6,7:  count <= 1;
-                                 2: count <= 17;
-                              endcase
-                           end
-                           if(count == 1) begin
-                              opcode <= data_in;
-                           end
+                           state <= OPCODE;
+                           address <= data_in;
                         end
+                     end
+            OPCODE:  if(in) begin
+                        state <= DECODE;
+                        opcode <= data_in;
+                     end
+            DECODE:  case(opcode)
+                        // 32 bit data op
+                        OUT_DATA1:  state <= DATA1;
+                        OUT_DATA2:  state <= DATA1;
+                        // No data ops
+                        OUT_RES:    begin
+                                       count <= 0;
+                                       send <= 1;
+                                       state <= STALL;
+                                    end
+                        LOAD,    
+                        LOAD_RES,   
+                        MUL,        
+                        MUL_ADD,
+                        NO_OP:      begin
+                                       send <= 1;
+                                       state <= ADDRESS;
+                                    end
+                     endcase
+
+
+            // Load data into serial
+            DATA1:   if(in)   state <= DATA2;
+            DATA2:   if(in)   state <= DATA3;
+            DATA3:   if(in)   state <= DATA4;
+            DATA4:   if(in) begin
+                        send <= 1;
+                        state <= ADDRESS; 
                      end
 
-            RX:    begin
-                           send <= 0;
-                           sel <= 0;
-                           count <= count - 1;
-                           if(count == 1) begin
-                              case(opcode)
-                                 0,1,3,4,5,6,7: state <= LOAD;
-                                 2: begin
-                                       count <= 128;
-                                       state <= ACC;
-                                    end
-                              endcase
+
+            // Get data back up host uart
+            STALL:           begin
+                              count <= count + 1;
+                              if(count == 16) begin
+                                 count <= 0;
+                                 state <= ACC;
+                                 send <= 1;
+                              end
                            end
-                        end
-            ACC:    begin
-                        count <= count - 1;
-                        acc <= 1;
-                        clear <= 0;
-                        if(count == 0) begin
-                           count <= 0;
-                           acc <= 0;
-                           state <= ACC_DONE;
-                        end
-                     end
+            ACC:           begin
+                              acc <= 1;
+                              count <= count + 1;
+                              if(count == 127) begin
+                                 acc <= 0;
+                                 state <= ACC_DONE;
+                                 send <= 0;
+                              end
+                           end
+   
             ACC_DONE:   begin
                            out <= 1;
                            state <= SEND_ACC_1;
@@ -152,9 +184,10 @@ module ctrl(
                               end
                            end
             SEND_ACC_16 :  begin
-                              state <= LOAD;   
+                              out <= 0;
+                              state <= ADDRESS;   
                            end
-            default:    state <= LOAD;
+            default:    state <= ADDRESS;
          endcase
       end
    end

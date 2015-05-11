@@ -89,28 +89,16 @@ module tb_perceptron;
       // MUL
       #90000    uart_send(100);
       #90000    uart_send(5);
-      #90000    uart_send(0);
-      #90000    uart_send(0);
-      #90000    uart_send(0);
-      #90000    uart_send(0);
+      
 
       // MUL ADD
       #90000    uart_send(100);
       #90000    uart_send(6);
-      #90000    uart_send(0);
-      #90000    uart_send(0);
-      #90000    uart_send(0);
-      #90000    uart_send(0);
-
+   
       // OUT RESS
       #90000    uart_send(100);
       #90000    uart_send(2);
-      #90000    uart_send(0);
-      #90000    uart_send(0);
-      #90000    uart_send(0);
-      #90000    uart_send(0);
-
-
+     
 
       #2000000
 	   
@@ -133,27 +121,14 @@ module tb_perceptron;
       // MUL
       #90000    uart_send(101);
       #90000    uart_send(5);
-      #90000    uart_send(0);
-      #90000    uart_send(0);
-      #90000    uart_send(0);
-      #90000    uart_send(0);
-
+      
       // MUL ADD
       #90000    uart_send(101);
       #90000    uart_send(6);
-      #90000    uart_send(0);
-      #90000    uart_send(0);
-      #90000    uart_send(0);
-      #90000    uart_send(0);
 
       // OUT RESS
       #90000    uart_send(101);
       #90000    uart_send(2);
-      #90000    uart_send(0);
-      #90000    uart_send(0);
-      #90000    uart_send(0);
-      #90000    uart_send(0);
-
 
       #2000000
 	   
@@ -185,26 +160,14 @@ module tb_perceptron;
       // MUL
       #90000    uart_send(101);
       #90000    uart_send(5);
-      #90000    uart_send(0);
-      #90000    uart_send(0);
-      #90000    uart_send(0);
-      #90000    uart_send(0);
 
       // MUL ADD
       #90000    uart_send(101);
       #90000    uart_send(6);
-      #90000    uart_send(0);
-      #90000    uart_send(0);
-      #90000    uart_send(0);
-      #90000    uart_send(0);
 
       // OUT RESS
       #90000    uart_send(101);
       #90000    uart_send(2);
-      #90000    uart_send(0);
-      #90000    uart_send(0);
-      #90000    uart_send(0);
-      #90000    uart_send(0);
 
       #200000
 
