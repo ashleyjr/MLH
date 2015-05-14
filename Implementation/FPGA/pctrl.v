@@ -10,7 +10,7 @@ module pctrl(
    parameter      OUT_DATA1      = 3'h0,
                   OUT_DATA2      = 3'h1,
                   OUT_RES        = 3'h2,
-                  LOAD           = 3'h3,
+                  OUT_RES_ADD    = 3'h3,
                   LOAD_RES       = 3'h4,
                   MUL            = 3'h5,
                   MUL_ADD        = 3'h6,
@@ -59,7 +59,8 @@ module pctrl(
                               opcode   <= shifter[3:1];     // use what's in for op
                               state    <= EXECUTE;
                               case(shifter[3:1])
-                                 OUT_RES:   count    <= 127;
+                                 OUT_RES,
+                                 OUT_RES_ADD:   count    <= 127;
                                  default:    count    <= 31;
                               endcase
                            end

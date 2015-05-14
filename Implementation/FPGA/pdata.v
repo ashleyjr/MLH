@@ -13,7 +13,7 @@ module pdata(
    parameter      OUT_DATA1   = 3'h0,
                   OUT_DATA2   = 3'h1,
                   OUT_RES     = 3'h2,
-                  LOAD        = 3'h3,
+                  OUT_RES_ADD        = 3'h3,
                   LOAD_RES    = 3'h4,
                   MUL         = 3'h5,
                   MUL_ADD     = 3'h6,
@@ -28,9 +28,10 @@ module pdata(
   
    // 4 possible output states on the mux
    assign   tx = 
-      (opcode == OUT_DATA1  )  ? data_1[0]:
-      (opcode == OUT_DATA2  )  ? data_2[0]:
-      (opcode == OUT_RES    )  ? acc[0]: 
+      (opcode == OUT_DATA1  )    ? data_1[0]:
+      (opcode == OUT_DATA2  )    ? data_2[0]:
+      (opcode == OUT_RES    )    ? acc[0]:
+      (opcode == OUT_RES_ADD)    ? acc[0]:
                                  1'bZ; 
 
    // Shifting and maths 
@@ -43,11 +44,13 @@ module pdata(
          case(opcode)
             OUT_DATA1:  data_1      <= {rx,data_1[SIZE-1:1]};
             OUT_DATA2:  data_2      <= {rx,data_2[SIZE-1:1]};
-            OUT_RES:    acc         <= {1'b0,acc[(4*SIZE)-1:1]};  
-            LOAD:       begin
-                           data_1   <= {data_1,rx};
-                           data_2   <= {data_2,data_1[SIZE-1]};
-                        end
+            OUT_RES,
+            OUT_RES_ADD:    acc         <= {1'b0,acc[(4*SIZE)-1:1]};  
+            
+            //LOAD:       begin
+            //               data_1   <= {data_1,rx};
+            //               data_2   <= {data_2,data_1[SIZE-1]};
+            //            end
             LOAD_RES:   acc         <= {acc,rx};
             MUL:        acc         <= data_1*data_2;
             MUL_ADD:    acc         <= acc + (data_1*data_2);

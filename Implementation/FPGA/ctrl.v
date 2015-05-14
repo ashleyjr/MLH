@@ -20,11 +20,12 @@ module ctrl(
    parameter      OUT_DATA1   = 3'h0,
                   OUT_DATA2   = 3'h1,
                   OUT_RES     = 3'h2,
-                  LOAD        = 3'h3,
+                  OUT_RES_ADD = 3'h3,
                   LOAD_RES    = 3'h4,
                   MUL         = 3'h5,
                   MUL_ADD     = 3'h6,
                   NO_OP       = 3'h7;
+               
 
 
    parameter      ADDRESS     = 8'd0,
@@ -110,12 +111,17 @@ module ctrl(
                         OUT_DATA1:  state <= DATA1;
                         OUT_DATA2:  state <= DATA1;
                         // No data ops
-                        OUT_RES:    begin
-                                       count <= 0;
-                                       send <= 1;
-                                       state <= STALL;
-                                    end
-                        LOAD,    
+                        OUT_RES:       begin
+                                          count <= 0;
+                                          send <= 1;
+                                          state <= STALL;
+                                          clear <= 1;
+                                       end
+                        OUT_RES_ADD:   begin
+                                          count <= 0;
+                                          send <= 1;
+                                          state <= STALL;
+                                       end    
                         LOAD_RES,   
                         MUL,        
                         MUL_ADD,
@@ -138,11 +144,12 @@ module ctrl(
 
             // Get data back up host uart
             STALL:           begin
+                              clear <= 0;
                               count <= count + 1;
                               if(count == 16) begin
                                  count <= 0;
                                  state <= ACC;
-                                 send <= 1;
+                                 send <= 0;
                               end
                            end
             ACC:           begin

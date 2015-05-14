@@ -95,13 +95,15 @@ module tb_perceptron;
       #90000    uart_send(100);
       #90000    uart_send(6);
    
-      // OUT RESS
+      // OUT RES
       #90000    uart_send(100);
       #90000    uart_send(2);
      
 
+
       #2000000
-	   
+	  
+
       // Load Data 1
       #90000    uart_send(101);
       #90000    uart_send(0);
@@ -132,14 +134,6 @@ module tb_perceptron;
 
       #2000000
 	   
-
-      nRst = 0;
-      #200000
-      nRst = 1;
-      #200000
-
-
-	
 	   
       // Load Data 1
       #90000    uart_send(101);
@@ -169,8 +163,72 @@ module tb_perceptron;
       #90000    uart_send(101);
       #90000    uart_send(2);
 
-      #200000
+      #2000000
 
+
+
+	   
+      // Load Data 1
+      #90000    uart_send(101);
+      #90000    uart_send(0);
+      #90000    uart_send(1);
+      #90000    uart_send(0);
+      #90000    uart_send(0);
+      #90000    uart_send(0);
+
+      // Load Data 2
+      #90000    uart_send(101);
+      #90000    uart_send(1);
+      #90000    uart_send(1);
+      #90000    uart_send(0);
+      #90000    uart_send(0);
+      #90000    uart_send(0);
+
+      // MUL
+      #90000    uart_send(101);
+      #90000    uart_send(5);
+
+      // MUL ADD
+      #90000    uart_send(101);
+      #90000    uart_send(6);
+
+      // OUT RES ADD
+      #90000    uart_send(101);
+      #90000    uart_send(3);
+
+      
+
+      #2000000 
+	   
+      // Load Data 1
+      #90000    uart_send(101);
+      #90000    uart_send(0);
+      #90000    uart_send(1);
+      #90000    uart_send(0);
+      #90000    uart_send(1);
+      #90000    uart_send(0);
+
+      // Load Data 2
+      #90000    uart_send(101);
+      #90000    uart_send(1);
+      #90000    uart_send(1);
+      #90000    uart_send(0);
+      #90000    uart_send(1);
+      #90000    uart_send(0);
+
+      // MUL
+      #90000    uart_send(101);
+      #90000    uart_send(5);
+
+      // MUL ADD
+      #90000    uart_send(101);
+      #90000    uart_send(6);
+
+      // OUT RES ADD
+      #90000    uart_send(101);
+      #90000    uart_send(3);
+
+      #20000000 
       
       $finish;
 	end
