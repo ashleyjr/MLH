@@ -1,26 +1,19 @@
 module uart(
-   input          clk,
-   input          nRst,
-   input          transmit,   // Raise to trasmit
-   input    [7:0] data_tx,    // Transmit this
-   input          rx,
-   output         busy_tx,
-   output         busy_rx,
-   output         recieved,   // Raised when byte recieved, zero when getting
-   output   [7:0] data_rx,    // This is recieved
-   output         tx
+   input             clk,
+   input             nRst,
+   input             transmit,   // Raise to trasmit
+   input       [7:0] data_tx,    // Transmit this
+   input             rx,
+   output reg        busy_tx,
+   output reg        busy_rx,
+   output reg        recieved,   // Raised when byte recieved, zero when getting
+   output reg  [7:0] data_rx,    // This is recieved
+   output reg        tx
 );
 
-   // Outputs
-   reg         busy_tx;
-   reg         recieved;
-   reg         tx;
-   reg         busy_rx;
-   reg [7:0]   data_rx;  
-   
 
    // Params
-   parameter   BAUD = 10'd430,      // 8.6us count, 115200 baud 
+   parameter   BAUD = 9'd430,      // 8.6us count, 115200 baud 
                BAUD_05 = BAUD / 2;
 
    parameter   RX_IDLE  = 4'b0000, 
@@ -79,7 +72,7 @@ module uart(
       end else begin
 
          // RX state machine
-         count_rx <= count_rx + 1;
+         if(count_rx != 9'h1FF) count_rx <= (count_rx + 1);
          case(state_rx)
             RX_IDLE:    begin                                     // Wait for incoming
                            count_rx    <= 0;
@@ -102,7 +95,7 @@ module uart(
             RX_7:       if(count_rx == BAUD) begin                // Shift in bits
                            shift_rx    <= {rx,shift_rx[7:1]};
                            count_rx    <= 0;
-                           state_rx    <= state_rx + 1;
+                           if(state_rx != 4'hF) state_rx <= state_rx + 1;
                         end
             RX_8:       if(count_rx == BAUD) begin                // Last bit
                            data_rx     <= {rx,shift_rx[7:1]};
@@ -124,7 +117,7 @@ module uart(
 
 
          // TX state machine
-         count_tx <= count_tx + 1;
+         if(count_tx != 9'h1FF) count_tx <= count_tx + 1;
          case(state_tx)
             TX_IDLE:    begin                                     // When told to transmit take line low
                            count_tx    <= 0;
@@ -146,7 +139,7 @@ module uart(
                            tx          <= shift_tx[0];
                            shift_tx    <= shift_tx >> 1;
                            count_tx    <= 0;
-                           state_tx    <= state_tx + 1;
+                           if(state_tx != 4'hF) state_tx <= state_tx + 1;
                         end
             TX_WAIT:    if(count_tx == BAUD) begin                // Return line high and wait
                            state_tx    <= TX_BUSY;

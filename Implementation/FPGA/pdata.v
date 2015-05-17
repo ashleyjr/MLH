@@ -51,7 +51,7 @@ module pdata(
             //               data_1   <= {data_1,rx};
             //               data_2   <= {data_2,data_1[SIZE-1]};
             //            end
-            LOAD_RES:   acc         <= {acc,rx};
+            //LOAD_RES:   acc         <= {acc,rx};
             MUL:        acc         <= data_1*data_2;
             MUL_ADD:    acc         <= acc + (data_1*data_2);
          endcase

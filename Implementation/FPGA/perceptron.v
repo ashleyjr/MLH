@@ -19,7 +19,6 @@ module perceptron(
    wire  [3:0]    ctrl_sel;
    wire  [7:0]    ctrl_data;
    wire           ctrl_good;
-   wire  [2:0]    ctrl_serial;
    wire           ctrl_get;
    wire           ctrl_send;
 
@@ -53,15 +52,12 @@ module perceptron(
       .nRst       (nRst          ),
       .data_in    (uart_data     ),
       .in         (uart_good     ),
-      .rx         (              ),
       .status     (leds          ),
       .busy       (uart_tx_busy  ),
-      .data_out   (              ),
       .out        (ctrl_good     ),
       .acc        (ctrl_acc      ),
       .clear      (ctrl_clear    ),
       .sel        (ctrl_sel      ),
-      .serial     (ctrl_serial   ),
       .get        (ctrl_get      ),
       .send       (ctrl_send     )
    );

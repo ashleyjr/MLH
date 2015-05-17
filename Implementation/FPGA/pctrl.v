@@ -35,8 +35,7 @@ module pctrl(
          shifter  <= 0;
          count    <= 0;
        end else begin
-         if(count > 0)
-            count <= count - 1;
+         if(count != 0) count <= count - 1;
          case(state) 
             IDLE:       if(!rx) begin
                            count       <= 8;
@@ -46,10 +45,10 @@ module pctrl(
                            shifter     <= {rx,shifter[7:1]}; 
                            if(count == 0)
                               if(shifter == address) begin
-                                 count <= 6;
+                                 count <= 7'd6;
                                  state <= DECODE;
                               end else begin 
-                                 count <= 50;
+                                 count <= 7'd50;
                                  state <= WAIT;
                               end
                         end
@@ -60,8 +59,8 @@ module pctrl(
                               state    <= EXECUTE;
                               case(shifter[3:1])
                                  OUT_RES,
-                                 OUT_RES_ADD:   count    <= 127;
-                                 default:    count    <= 31;
+                                 OUT_RES_ADD:   count    <= 7'd127;
+                                 default:       count    <= 7'd31;
                               endcase
                            end
                         end

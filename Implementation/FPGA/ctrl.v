@@ -3,15 +3,12 @@ module ctrl(
    input             nRst,
    input       [7:0] data_in,
    input             in,
-   input             rx,
    input             busy,
    output      [7:0] status, 
-   output reg  [7:0] data_out,
    output reg        out,
    output reg        acc,
    output reg        clear,
    output reg  [3:0] sel,
-   output reg  [2:0] serial,
    output            get,
    output reg        send
 );
@@ -28,50 +25,45 @@ module ctrl(
                
 
 
-   parameter      ADDRESS     = 8'd0,
-                  OPCODE      = 8'd1,
-                  DECODE      = 8'd2,
-                  DATA1       = 8'd3,
-                  DATA2       = 8'd4,
-                  DATA3       = 8'd5,
-                  DATA4       = 8'd6,
-                  RETURN      = 8'd7, 
-   
-   
-   
-      
-               ACC            =8'd8,
-               ACC_DONE       = 8'd9,
-               STALL          = 8'd10,
+   parameter      ADDRESS        = 5'd0,
+                  OPCODE         = 5'd1,
+                  DECODE         = 5'd2,
+                  DATA1          = 5'd3,
+                  DATA2          = 5'd4,
+                  DATA3          = 5'd5,
+                  DATA4          = 5'd6,
+                  RETURN         = 5'd7,  
+                  ACC            = 5'd8,
+                  ACC_DONE       = 5'd9,
+                  STALL          = 5'd10,
 
-               // Send data back
-               SEND_ACC_1     = 8'd11, 
-               SEND_ACC_2     = 8'd12,
-               SEND_ACC_3     = 8'd13,
-               SEND_ACC_4     = 8'd14,
-               SEND_ACC_5     = 8'd15, 
-               SEND_ACC_6     = 8'd16,
-               SEND_ACC_7     = 8'd17,
-               SEND_ACC_8     = 8'd18,
-               SEND_ACC_9     = 8'd19, 
-               SEND_ACC_10    = 8'd20,
-               SEND_ACC_11    = 8'd21,
-               SEND_ACC_12    = 8'd22,
-               SEND_ACC_13    = 8'd23, 
-               SEND_ACC_14    = 8'd24,
-               SEND_ACC_15    = 8'd25,
-               SEND_ACC_16    = 8'd26;
+                  // Send data back
+                  SEND_ACC_1     = 5'd11, 
+                  SEND_ACC_2     = 5'd12,
+                  SEND_ACC_3     = 5'd13,
+                  SEND_ACC_4     = 5'd14,
+                  SEND_ACC_5     = 5'd15, 
+                  SEND_ACC_6     = 5'd16,
+                  SEND_ACC_7     = 5'd17,
+                  SEND_ACC_8     = 5'd18,
+                  SEND_ACC_9     = 5'd19, 
+                  SEND_ACC_10    = 5'd20,
+                  SEND_ACC_11    = 5'd21,
+                  SEND_ACC_12    = 5'd22,
+                  SEND_ACC_13    = 5'd23, 
+                  SEND_ACC_14    = 5'd24,
+                  SEND_ACC_15    = 5'd25,
+                  SEND_ACC_16    = 5'd26;
 
 
 
-   reg   [47:0]      load;    // Address + Opcode +  32 bits
    reg   [6:0]       ptr;
   
    reg   [7:0]    opcode;
    reg   [7:0]    address;
-   reg   [7:0]    state;
+   reg   [4:0]    state;
    reg   [7:0]    data;
-   reg   [7:0]    count;
+   reg   [8:0]    count;
    reg            start;
 
 
@@ -84,8 +76,6 @@ module ctrl(
    always @(posedge clk or negedge nRst) begin
       if(!nRst) begin
          state <= ADDRESS;
-         load <= 0;
-         serial <= 0;
          send  <= 0;
          count <= 0;
          start <= 0;
@@ -145,7 +135,7 @@ module ctrl(
             // Get data back up host uart
             STALL:           begin
                               clear <= 0;
-                              count <= count + 1;
+                              if(count != 9'h1FF) count <= count + 1;
                               if(count == 16) begin
                                  count <= 0;
                                  state <= ACC;
@@ -154,7 +144,7 @@ module ctrl(
                            end
             ACC:           begin
                               acc <= 1;
-                              count <= count + 1;
+                              if(count != 9'h1FF) count <= count + 1;
                               if(count == 127) begin
                                  acc <= 0;
                                  state <= ACC_DONE;
@@ -186,8 +176,8 @@ module ctrl(
                               clear <= 0;
                               if(!busy & !out) begin
                                  out <= 1;
-                                 sel <= sel + 1;
-                                 state <= state + 1;
+                                 if(sel != 4'hF)      sel <= sel + 1;
+                                 if(state != 5'h1F)   state <= state + 1;
                               end
                            end
             SEND_ACC_16 :  begin

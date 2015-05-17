@@ -4,14 +4,13 @@ module serial(
    input                   clk,
    input                   nRst,
    input       [7:0]       data,
-   input       [2:0]       sel,
    input                   send,
    input                   get,
    output reg              tx
 );
 
    reg   [47:0]      load;
-   reg   [7:0]       count;
+   reg   [8:0]       count;
    reg               state;
 
    parameter   LOAD     = 1'h0,

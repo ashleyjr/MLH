@@ -6,7 +6,6 @@ module percept(
    output            tx
 );
 
-   wire  [7:0] address;
    wire  [2:0] opcode;
 
    pctrl pctrl(
