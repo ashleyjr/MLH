@@ -70,166 +70,40 @@ module tb_perceptron;
       #100     nRst = 0;
       #100     nRst = 1;
 
-      // Load Data 1
-      #90000    uart_send(100);
-      #90000    uart_send(0);
-      #90000    uart_send(1);
-      #90000    uart_send(0);
-      #90000    uart_send(0);
-      #90000    uart_send(0);
+      repeat(30) begin
+         // Load Data 1
+         #90000    uart_send(0);
+         #90000    uart_send(0);
+         #90000    uart_send(1);
+         #90000    uart_send(0);
+         #90000    uart_send(0);
+         #90000    uart_send(0);
 
-      // Load Data 2
-      #90000    uart_send(100);
-      #90000    uart_send(1);
-      #90000    uart_send(1);
-      #90000    uart_send(0);
-      #90000    uart_send(0);
-      #90000    uart_send(0);
+         // Load Data 2
+         #90000    uart_send(0);
+         #90000    uart_send(1);
+         #90000    uart_send(1);
+         #90000    uart_send(0);
+         #90000    uart_send(0);
+         #90000    uart_send(0);
 
-      // MUL
-      #90000    uart_send(100);
-      #90000    uart_send(5);
-      
+         // MUL
+         #90000    uart_send(0);
+         #90000    uart_send(5);
+         
 
-      // MUL ADD
-      #90000    uart_send(100);
-      #90000    uart_send(6);
+         // MUL ADD
+         #90000    uart_send(0);
+         #90000    uart_send(6);
    
-      // OUT RES
-      #90000    uart_send(100);
-      #90000    uart_send(2);
+         // OUT RES
+         #90000    uart_send(0);
+         #90000    uart_send(2);
      
 
 
-      #2000000
-	  
-
-      // Load Data 1
-      #90000    uart_send(101);
-      #90000    uart_send(0);
-      #90000    uart_send(1);
-      #90000    uart_send(0);
-      #90000    uart_send(0);
-      #90000    uart_send(0);
-
-      // Load Data 2
-      #90000    uart_send(101);
-      #90000    uart_send(1);
-      #90000    uart_send(1);
-      #90000    uart_send(0);
-      #90000    uart_send(0);
-      #90000    uart_send(0);
-
-      // MUL
-      #90000    uart_send(101);
-      #90000    uart_send(5);
-      
-      // MUL ADD
-      #90000    uart_send(101);
-      #90000    uart_send(6);
-
-      // OUT RESS
-      #90000    uart_send(101);
-      #90000    uart_send(2);
-
-      #2000000
-	   
-	   
-      // Load Data 1
-      #90000    uart_send(101);
-      #90000    uart_send(0);
-      #90000    uart_send(1);
-      #90000    uart_send(0);
-      #90000    uart_send(0);
-      #90000    uart_send(0);
-
-      // Load Data 2
-      #90000    uart_send(101);
-      #90000    uart_send(1);
-      #90000    uart_send(1);
-      #90000    uart_send(0);
-      #90000    uart_send(0);
-      #90000    uart_send(0);
-
-      // MUL
-      #90000    uart_send(101);
-      #90000    uart_send(5);
-
-      // MUL ADD
-      #90000    uart_send(101);
-      #90000    uart_send(6);
-
-      // OUT RESS
-      #90000    uart_send(101);
-      #90000    uart_send(2);
-
-      #2000000
-
-
-
-	   
-      // Load Data 1
-      #90000    uart_send(101);
-      #90000    uart_send(0);
-      #90000    uart_send(1);
-      #90000    uart_send(0);
-      #90000    uart_send(0);
-      #90000    uart_send(0);
-
-      // Load Data 2
-      #90000    uart_send(101);
-      #90000    uart_send(1);
-      #90000    uart_send(1);
-      #90000    uart_send(0);
-      #90000    uart_send(0);
-      #90000    uart_send(0);
-
-      // MUL
-      #90000    uart_send(101);
-      #90000    uart_send(5);
-
-      // MUL ADD
-      #90000    uart_send(101);
-      #90000    uart_send(6);
-
-      // OUT RES ADD
-      #90000    uart_send(101);
-      #90000    uart_send(3);
-
-      
-
-      #2000000 
-	   
-      // Load Data 1
-      #90000    uart_send(101);
-      #90000    uart_send(0);
-      #90000    uart_send(1);
-      #90000    uart_send(0);
-      #90000    uart_send(1);
-      #90000    uart_send(0);
-
-      // Load Data 2
-      #90000    uart_send(101);
-      #90000    uart_send(1);
-      #90000    uart_send(1);
-      #90000    uart_send(0);
-      #90000    uart_send(1);
-      #90000    uart_send(0);
-
-      // MUL
-      #90000    uart_send(101);
-      #90000    uart_send(5);
-
-      // MUL ADD
-      #90000    uart_send(101);
-      #90000    uart_send(6);
-
-      // OUT RES ADD
-      #90000    uart_send(101);
-      #90000    uart_send(3);
-
-      #20000000 
-      
+         #2000000;
+	   end
       $finish;
 	end
 

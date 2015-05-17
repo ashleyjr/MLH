@@ -13,7 +13,7 @@ module pdata(
    parameter      OUT_DATA1   = 3'h0,
                   OUT_DATA2   = 3'h1,
                   OUT_RES     = 3'h2,
-                  OUT_RES_ADD        = 3'h3,
+                  OUT_RES_ADD = 3'h3,
                   LOAD_RES    = 3'h4,
                   MUL         = 3'h5,
                   MUL_ADD     = 3'h6,
@@ -45,7 +45,7 @@ module pdata(
             OUT_DATA1:  data_1      <= {rx,data_1[SIZE-1:1]};
             OUT_DATA2:  data_2      <= {rx,data_2[SIZE-1:1]};
             OUT_RES,
-            OUT_RES_ADD:    acc         <= {1'b0,acc[(4*SIZE)-1:1]};  
+            OUT_RES_ADD:    acc     <= {1'b0,acc[(4*SIZE)-1:1]};  
             
             //LOAD:       begin
             //               data_1   <= {data_1,rx};

@@ -28,7 +28,7 @@ module serial(
          case(state)
             LOAD: begin
                      if(get) begin
-                        count <= count + 8;
+                        count <= count + 4'h8;
                         case(count)
                            0:    load[7:0]         <= data;
                            8:    load[15:8]        <= data;
@@ -48,7 +48,7 @@ module serial(
                         state <= LOAD;
                         tx    <= 1;
                      end else begin
-                        count <= count - 1;
+                        count <= count - 1'b1;
                         tx    <= load[0];
                         load  <= load >> 1;
                      end

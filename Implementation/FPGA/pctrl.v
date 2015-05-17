@@ -35,7 +35,7 @@ module pctrl(
          shifter  <= 0;
          count    <= 0;
        end else begin
-         if(count != 0) count <= count - 1;
+         count <= count - 1'b1;
          case(state) 
             IDLE:       if(!rx) begin
                            count       <= 8;
@@ -75,7 +75,7 @@ module pctrl(
                            end
                         end
             WAIT:       begin
-                           count <= count - 1;
+                           count <= count - 1'b1;
                            if(count == 1) begin
                               state <= IDLE;
                               shifter <= 0;

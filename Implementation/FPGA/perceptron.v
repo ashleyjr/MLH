@@ -30,11 +30,19 @@ module perceptron(
    wire           uart_good;
    wire           uart_tx_busy;
 
-   
-   
+
+
+   reg clk_div;
+   always @(posedge clk or negedge nRst) begin
+      if(!nRst) begin
+         clk_div <= 0;
+      end else begin
+         clk_div <= ~clk_div;
+      end
+   end
    
    uart uart(
-      .clk        (clk           ),
+      .clk        (clk_div       ),
       .nRst       (nRst          ),
       .transmit   (ctrl_good     ),
       .data_tx    (mux_data      ),
@@ -48,7 +56,7 @@ module perceptron(
 
 
    ctrl ctrl(
-      .clk        (clk           ),
+      .clk        (clk_div       ),
       .nRst       (nRst          ),
       .data_in    (uart_data     ),
       .in         (uart_good     ),
@@ -63,14 +71,14 @@ module perceptron(
    );
 
    bank bank(
-      .clk        (clk           ),
+      .clk        (clk_div       ),
       .nRst       (nRst          ),
-      .rx         (serial_tx       ),
+      .rx         (serial_tx     ),
       .tx         (bank_tx       )
    );
 
    acc acc(
-      .clk        (clk           ),
+      .clk        (clk_div       ),
       .nRst       (nRst          ),
       .rx         (bank_tx       ),
       .add        (ctrl_acc      ),
@@ -85,11 +93,11 @@ module perceptron(
    );
 
    serial serial(
-      .clk        (clk           ),
+      .clk        (clk_div       ),
       .nRst       (nRst          ),
       .data       (uart_data     ),
-      .send       (ctrl_send      ),
-      .get        (ctrl_get       ),
+      .send       (ctrl_send     ),
+      .get        (ctrl_get      ),
       .tx         (serial_tx     )
    );
 endmodule

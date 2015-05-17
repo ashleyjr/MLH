@@ -56,29 +56,24 @@ module ctrl(
                   SEND_ACC_16    = 5'd26;
 
 
-
-   reg   [6:0]       ptr;
   
    reg   [7:0]    opcode;
-   reg   [7:0]    address;
    reg   [4:0]    state;
-   reg   [7:0]    data;
    reg   [8:0]    count;
-   reg            start;
 
 
    // TODO: NEED A TIMEOUT
 
    assign get = in;
    
-   assign status = state;
+   assign status = 8'h00;
 
    always @(posedge clk or negedge nRst) begin
       if(!nRst) begin
-         state <= ADDRESS;
-         send  <= 0;
-         count <= 0;
-         start <= 0;
+         state    <= ADDRESS;
+         opcode   <= 0;
+         send     <= 0;
+         count    <= 0;
       end else begin
          clear <= 0;
          case(state)
@@ -89,7 +84,6 @@ module ctrl(
                         sel <= 0;
                         if(in) begin
                            state <= OPCODE;
-                           address <= data_in;
                         end
                      end
             OPCODE:  if(in) begin
@@ -112,10 +106,7 @@ module ctrl(
                                           send <= 1;
                                           state <= STALL;
                                        end    
-                        LOAD_RES,   
-                        MUL,        
-                        MUL_ADD,
-                        NO_OP:      begin
+                        default:      begin
                                        send <= 1;
                                        state <= ADDRESS;
                                     end
@@ -135,7 +126,7 @@ module ctrl(
             // Get data back up host uart
             STALL:           begin
                               clear <= 0;
-                              if(count != 9'h1FF) count <= count + 1;
+                              count <= count + 1'b1;
                               if(count == 16) begin
                                  count <= 0;
                                  state <= ACC;
@@ -144,7 +135,7 @@ module ctrl(
                            end
             ACC:           begin
                               acc <= 1;
-                              if(count != 9'h1FF) count <= count + 1;
+                              count <= count + 1'b1;
                               if(count == 127) begin
                                  acc <= 0;
                                  state <= ACC_DONE;
@@ -176,8 +167,8 @@ module ctrl(
                               clear <= 0;
                               if(!busy & !out) begin
                                  out <= 1;
-                                 if(sel != 4'hF)      sel <= sel + 1;
-                                 if(state != 5'h1F)   state <= state + 1;
+                                 sel <= sel + 1'b1;
+                                 state <= state + 1'b1;
                               end
                            end
             SEND_ACC_16 :  begin

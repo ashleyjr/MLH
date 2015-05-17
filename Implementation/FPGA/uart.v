@@ -13,41 +13,42 @@ module uart(
 
 
    // Params
-   parameter   BAUD = 9'd430,      // 8.6us count, 115200 baud 
-               BAUD_05 = BAUD / 2;
+   parameter   BAUD = 20'd215,      // 8.6us count, 115200 baud 
+               BAUD_05 = BAUD / 2,
+               
 
-   parameter   RX_IDLE  = 4'b0000, 
-               RX_START = 4'b0001, 
-               RX_1     = 4'b0010,
-               RX_2     = 4'b0011,
-               RX_3     = 4'b0100,
-               RX_4     = 4'b0101,
-               RX_5     = 4'b0110,
-               RX_6     = 4'b0111,
-               RX_7     = 4'b1000,
-               RX_8     = 4'b1001,
-               RX_WAIT  = 4'b1010;
+               RX_IDLE  = 4'h0,
+               RX_START = 4'h1,
+               RX_1     = 4'h2,
+               RX_2     = 4'h3,
+               RX_3     = 4'h4,
+               RX_4     = 4'h5,
+               RX_5     = 4'h6,
+               RX_6     = 4'h7,
+               RX_7     = 4'h8,
+               RX_8     = 4'h9,
+               RX_WAIT  = 4'hA,
+   
 
-   parameter   TX_IDLE  = 4'b0000, 
-               TX_START = 4'b0001, 
-               TX_1     = 4'b0010,
-               TX_2     = 4'b0011,
-               TX_3     = 4'b0100,
-               TX_4     = 4'b0101,
-               TX_5     = 4'b0110,
-               TX_6     = 4'b0111,
-               TX_7     = 4'b1000,
-               TX_8     = 4'b1001,
-               TX_WAIT  = 4'b1010,
-               TX_BUSY  = 4'b1011;
+               TX_IDLE  = 4'h0, 
+               TX_START = 4'h1, 
+               TX_1     = 4'h2,
+               TX_2     = 4'h3,
+               TX_3     = 4'h4,
+               TX_4     = 4'h5,
+               TX_5     = 4'h6,
+               TX_6     = 4'h7,
+               TX_7     = 4'h8,
+               TX_8     = 4'h9,
+               TX_WAIT  = 4'hA,
+               TX_BUSY  = 4'hB;
 
    // Internal Regs
    reg [3:0]   state_rx;
-   reg [8:0]   count_rx;
-   reg [7:0]   shift_rx;
+   reg [19:0]   count_rx;
 
    reg [3:0]   state_tx;
-   reg [8:0]   count_tx;
+   reg [19:0]   count_tx;
    reg [7:0]   shift_tx;
  
 
@@ -58,7 +59,7 @@ module uart(
 
          // RX
          count_rx    <= 0;
-         shift_rx    <= 0;
+         data_rx    <= 0;
          busy_rx     <= 0;
          state_rx    <= RX_IDLE;
 
@@ -72,7 +73,7 @@ module uart(
       end else begin
 
          // RX state machine
-         if(count_rx != 9'h1FF) count_rx <= (count_rx + 1);
+         count_rx <= count_rx + 1'b1;
          case(state_rx)
             RX_IDLE:    begin                                     // Wait for incoming
                            count_rx    <= 0;
@@ -93,12 +94,12 @@ module uart(
             RX_5, 
             RX_6, 
             RX_7:       if(count_rx == BAUD) begin                // Shift in bits
-                           shift_rx    <= {rx,shift_rx[7:1]};
+                           data_rx    <= {rx,data_rx[7:1]};
                            count_rx    <= 0;
-                           if(state_rx != 4'hF) state_rx <= state_rx + 1;
+                           state_rx <= state_rx + 1'b1;
                         end
             RX_8:       if(count_rx == BAUD) begin                // Last bit
-                           data_rx     <= {rx,shift_rx[7:1]};
+                           data_rx     <= {rx,data_rx[7:1]};
                            count_rx    <= 0;
                            state_rx    <= RX_WAIT;
                            recieved    <= 1;
@@ -117,7 +118,7 @@ module uart(
 
 
          // TX state machine
-         if(count_tx != 9'h1FF) count_tx <= count_tx + 1;
+         count_tx <= count_tx + 1'b1;
          case(state_tx)
             TX_IDLE:    begin                                     // When told to transmit take line low
                            count_tx    <= 0;
@@ -139,7 +140,7 @@ module uart(
                            tx          <= shift_tx[0];
                            shift_tx    <= shift_tx >> 1;
                            count_tx    <= 0;
-                           if(state_tx != 4'hF) state_tx <= state_tx + 1;
+                           state_tx <= state_tx + 1'b1;
                         end
             TX_WAIT:    if(count_tx == BAUD) begin                // Return line high and wait
                            state_tx    <= TX_BUSY;
